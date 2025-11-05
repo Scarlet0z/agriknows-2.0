@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgriKnows Sign Up</title>
 
   <link rel="stylesheet" href="/css/signup.css">
+  <script type="module" src="/js/register.js" defer></script>
 </head>
+
 <body>
 
   <div class="left">
@@ -18,14 +22,15 @@
     <small>CREATE YOUR ACCOUNT TO GET STARTED</small>
     <h2>SIGN UP</h2>
     <input type="text" placeholder="Username">
-    <input type="email" placeholder="Email">
-    <input type="password" placeholder="Password">
-    <button>SIGN UP</button>
-    <p class="signup">Already have an account? 
-        <a href="/pages/login.html">Log in</a>
+    <input type="email" placeholder="Email" id="email" required>
+    <input type="password" placeholder="Password" id="password" required>
+    <button id="submit" type="submit">SIGN UP</button>
+    <p class="signup">Already have an account?
+      <a href="/pages/login.html">Log in</a>
     </p>
 
   </div>
 
 </body>
+
 </html>
