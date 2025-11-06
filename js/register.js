@@ -31,14 +31,14 @@ submit.addEventListener("click", function (event) {
     .then((userCredential) => {
       // Signed up
       const user = userCredential.user;
-      alert("Creating Account...")
-      window.location.href = "grand.html";
+      alert("Creating Account...");
+      window.location.href = "/index.html";
       // ...
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(errorMessage)
+      alert(errorMessage);
       // ..
     });
 });
