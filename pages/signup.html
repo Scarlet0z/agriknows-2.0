@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgriKnows Login</title>
   <link rel="stylesheet" href="/css/login.css">
+  <script type="module" src="/js/register.js" defer></script>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
     <div class="box form-box">
 
       <header>
-        Mabuhay! 
+        Mabuhay!
         <span>Welcome to AgriKnows</span>
         <br>
         <small>LOG IN TO YOUR ACCOUNT TO CONTINUE</small>
@@ -25,7 +26,7 @@
 
       <form action="" method="post">
         <div class="field input">
-          <label for="username" >Username</label>
+          <label for="username">Username</label>
           <input type="text" name="username" id="username" required>
         </div>
 
@@ -35,17 +36,17 @@
         </div>
 
         <div class="field input">
-          <label for="password" >Password</label>
+          <label for="password">Password</label>
           <input type="password" name="password" id="password" required>
         </div>
       </form>
-       </div>
-          <button>LOG IN</button>
-          <p class="signup">Already have an account? 
-            <a href="/pages/login.html">Sign up</a>
-          </p>
-        </div>
     </div>
+    <button id="submit" type="submit">LOG IN</button>
+    <p class="signup">Already have an account?
+      <a href="/pages/login.html">Sign up</a>
+    </p>
+  </div>
+  </div>
 
 </body>
 
