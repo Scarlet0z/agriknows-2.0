@@ -1,58 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Settings | AgriKnows</title>
-    <link rel="stylesheet" href="/css/UserSettings.css" />
-  </head>
-  <body>
-    <div class="dashboard">
 
-      <!-- Header -->
-      <div class="container">
-        <header>
-          <div class="header-left">
-            <div class="logo-title">
-              <img src="/image/LOGO.png" class="agri-logo" alt="AgriKnows Logo"
-                onclick="window.location.href='/index.html'">
-            </div>
-            <h1>AGRIKNOWS</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Settings | AgriKnows</title>
+  <link rel="stylesheet" href="/css/UserSettings.css" />
+</head>
+
+<body>
+  <div class="dashboard">
+
+    <!-- Header -->
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <div class="logo-title">
+            <img src="/image/LOGO.png" class="agri-logo" alt="AgriKnows Logo"
+              onclick="window.location.href='/index.html'">
           </div>
-          <div class="header-right">
-            <img src="/image/profile.png" class="user-profile" alt="profile">
+          <h1>AGRIKNOWS</h1>
+        </div>
+        <div class="header-right">
+          <img src="/image/profile.png" class="user-profile" alt="profile">
+        </div>
+      </header>
+
+      <main class="settings-container">
+        <a href="/index.html" class="back-btn">← Back to Home</a>
+        <h1>User Settings</h1>
+
+        <!-- Personal Information -->
+        <section class="card">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="#000"
+              d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
+          </svg>
+
+          <div class="form-row">
+            <label>Username</label>
+            <input type="text" value="Juan Dela Cruz" />
           </div>
-        </header>
+          <div class="form-row">
+            <label>Email</label>
+            <input type="email" value="juandelacruz@gmail.com" />
+          </div>
+        </section>
 
-        <main class="settings-container">
-          <a href="/index.html" class="back-btn">← Back to Home</a>
-          <h1>User Settings</h1>
+        <!-- Security -->
+        <section class="card">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="#000"
+              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5zm0 4a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m5.13 12A9.7 9.7 0 0 1 12 20.92A9.7 9.7 0 0 1 6.87 17c-.34-.5-.63-1-.87-1.53c0-1.65 2.71-3 6-3s6 1.32 6 3c-.24.53-.53 1.03-.87 1.53" />
+          </svg>
 
-          <!-- Personal Information -->
-          <section class="card">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24">
-              <path fill="#000"
-                d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
-            </svg>
+          <div class="form-row">
+            <label>Current Password</label>
+            <input type="password" value="**********" />
+          </div>
+          <div class="form-row">
+            <label>New Password</label>
+            <input type="password" />
+          </div>
+          <div class="form-row">
+            <label>Confirm Password</label>
+            <input type="password" />
+          </div>
+          <button class="btn">Save Password</button>
+        </section>
 
-            <div class="form-row">
-              <label>Username</label>
-              <input type="text" value="Juan Dela Cruz" />
-            </div>
-            <div class="form-row">
-              <label>Email</label>
-              <input type="email" value="juandelacruz@gmail.com" />
-            </div>
-          </section>
+        <!-- Appearance -->
+        <button class="btn save-btn">SAVE</button>
 
-          <!-- Security -->
-          <section class="card">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24">
-              <path fill="#000"
-                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5zm0 4a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m5.13 12A9.7 9.7 0 0 1 12 20.92A9.7 9.7 0 0 1 6.87 17c-.34-.5-.63-1-.87-1.53c0-1.65 2.71-3 6-3s6 1.32 6 3c-.24.53-.53 1.03-.87 1.53" />
-            </svg>
+        <!-- Log Out -->
+        <section class="card">
+          <h2>Log Out</h2>
+          <p>Click the button below to log out of your account.</p>
+          <button class="btn" id="logout-btn" style="background-color: #c0392b; margin-top: 10px;">Log Out</button>
+        </section>
 
             <div class="form-row">
               <label>Current Password</label>
@@ -76,11 +101,12 @@
         </main>
       </div>
     </div>
-    <script src="/js/UserSettings.js"></script>
-  </body>
+  </div>
+  <script type="module" src="/js/UserSettings.js"></script>
+</body>
 
-  <footer>
-    AgriKnows © 2025
-  </footer>
+<footer>
+  AgriKnows © 2025
+</footer>
 
 </html>
