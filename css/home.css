@@ -645,34 +645,121 @@ footer{
     text-align: center;
     height: 20%;
 }
-/* Responsive header */
+
+/* ===========================
+   📱 MOBILE RESPONSIVE DESIGN
+   =========================== */
 @media (max-width: 768px) {
+    /* HEADER */
     header {
         flex-direction: column;
-        gap: 15px;
+        text-align: center;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .header-left {
+        flex-direction: column;
+        align-items: center;
         text-align: center;
     }
-    
-    .header-left {
-        justify-content: center;
-    }
-    
-    .header-right {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
+
     .header-left h1 {
         font-size: 1.5rem;
     }
-    
-    .logo {
-        width: 40px;
-        height: 40px;
+
+    .agri-logo {
+        height: 60px;
     }
-    
-    .logo i {
-        font-size: 1.4rem;
+
+    .header-right {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #current-date {
+        font-size: 0.9rem;
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+    }
+
+    /* GRID ADJUSTMENT */
+    .current-status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* TABLE */
+    .history-table table,
+    .history-table thead,
+    .history-table tbody,
+    .history-table th,
+    .history-table td,
+    .history-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .history-table thead {
+        display: none; /* hide header on mobile */
+    }
+
+    .history-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        background: #fff;
+    }
+
+    .history-table td {
+        display: flex;
+        justify-content: space-between;
+        text-align: left;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .history-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    /* BUTTONS & CONTROLS */
+    .history-controls,
+    .time-filters,
+    .history-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .action-btn,
+    .export-btn,
+    .graph-mode-btn,
+    .submit-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* MODALS */
+    .modal-content {
+        width: 95%;
+        margin-top: 15%;
+        padding: 20px;
+    }
+
+    /* FOOTER */
+    footer {
+        font-size: 0.9rem;
+        padding: 15px;
     }
 }
 
@@ -680,114 +767,20 @@ footer{
     .header-left h1 {
         font-size: 1.3rem;
     }
-    
-    .logo {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .logo i {
-        font-size: 1.2rem;
-    }
-    
-    #current-date {
-        font-size: 0.9rem;
-        padding: 6px 12px;
-    }
-    
-    .user-profile {
-        padding: 6px 12px;
-    }
-    
-    .user-icon {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .user-icon i {
+
+    .reading-card h3 {
         font-size: 1rem;
     }
-}
-@media (max-width: 768px) {
 
-.history-graph {
-        grid-template-columns: 1fr;
-}
-.graph-container {
-        height: 180px;
-}
-.history-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-.history-actions {
-        justify-content: center;
-}
-    
-.time-filters {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-}
-.history-controls {
-        flex-direction: column;
-        align-items: stretch;
-}
- .readings-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-}
-    
-    .form-row {
-        grid-template-columns: 1fr;
+    .value {
+        font-size: 1.4rem;
     }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .pump-controls {
-        flex-direction: column;
-    }
-    
-    .history-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .export-btn,
-.graph-mode-btn {
-    padding: 6px 12px;
-    font-size: 0.9rem;
-}
 
-}
-@media (max-width: 480px) {
-    .graph-container {
-        height: 160px;
-        padding: 10px;
+    .agri-logo {
+        height: 50px;
     }
-    
-    .reading-card {
-        padding: 12px;
-    }
-    
-    .switch {
-        width: 70px;
-        height: 35px;
-    }
-    
-    .slider:before {
-        height: 28px;
-        width: 28px;
-    }
-    
-    input:checked + .slider:before {
-        transform: translateX(35px);
+
+    .user-profile {
+        height: 40px;
     }
 }

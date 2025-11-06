@@ -26,11 +26,11 @@ header {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 0px;
 }
 .agri-logo {
     width: auto;
-    height: 70px;
+    height: 80px;
     border-radius: 30%;
     display: flex;
     align-items: center;
@@ -203,68 +203,106 @@ footer{
     text-align: center;
     height: 20%;
 }
-/* Responsive header */
+/* 🌿 HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 2px solid #ddd;
+  background: transparent;
+  border-radius: 5px;
+}
+
+/* Left side: Logo + Title */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.agri-logo {
+  height: 60px;
+  width: auto;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.agri-logo:hover {
+  transform: scale(1.05);
+}
+
+.header-left h1 {
+  color: #4b6c2a;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #405a24, #86bd50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Right side: User icon or profile */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Profile icon */
+.user-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background: transparent;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.user-profile:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive (keep row layout but adjust sizes) */
 @media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    
-    .header-left {
-        justify-content: center;
-    }
-    
-    .header-right {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .header-left h1 {
-        font-size: 1.5rem;
-    }
-    
-    .logo {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .logo i {
-        font-size: 1.4rem;
-    }
+  header {
+    padding: 8px 15px;
+  }
+
+  .header-left h1 {
+    font-size: 1.5rem;
+  }
+
+  .agri-logo {
+    height: 45px;
+  }
+
+  .user-profile {
+    height: 40px;
+    width: 40px;
+  }
 }
 
 @media (max-width: 480px) {
-    .header-left h1 {
-        font-size: 1.3rem;
-    }
-    
-    .logo {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .logo i {
-        font-size: 1.2rem;
-    }
-    
-    #current-date {
-        font-size: 0.9rem;
-        padding: 6px 12px;
-    }
-    
-    .user-profile {
-        padding: 6px 12px;
-    }
-    
-    .user-icon {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .user-icon i {
-        font-size: 1rem;
-    }
+  header {
+    padding: 6px 10px;
+  }
+
+  .header-left h1 {
+    font-size: 1.2rem;
+  }
+
+  .agri-logo {
+    height: 40px;
+  }
+
+  .user-profile {
+    height: 35px;
+    width: 35px;
+  }
 }
+
 
 
