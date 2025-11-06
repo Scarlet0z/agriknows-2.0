@@ -77,6 +77,37 @@ header{
   flex-direction: column;
 }
 
+/* Password Field Styling */
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field input {
+  width: 100%;
+  padding: 12px 45px 12px 12px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.password-field img {
+  position: absolute;
+  margin-top: 9px;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.password-field img:hover {
+  opacity: 1;
+}
+
 .form-box form input input{
    height: 40px;
    width: 100%;
@@ -99,7 +130,7 @@ header{
   border: 2px solid #ccc;
   border-radius: 10px;
   font-size: 16px;
-  text-align: center;
+  text-align: left;
 }
 
 .container button {
