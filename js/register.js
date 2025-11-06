@@ -1,7 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,7 +19,8 @@ const email = document.getElementById('email').value;
 const password = document.getElementById('password').value;
 
 //submit button /  signup button
-const submit = document.getElementById('submit');  
-submit.addEventListener("click", function (event){
+const submit = document.getElementsById ('submit');  
+submit.addEventListener("click", function (event) {
  event.preventDefault();
+ alert(5);
 });
