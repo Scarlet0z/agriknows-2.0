@@ -1,39 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgriKnows Sign Up</title>
-
-  <link rel="stylesheet" href="/css/signup.css">
-  <script type="module" src="/js/register.js" defer></script>
+  <title>AgriKnows Login</title>
+  <link rel="stylesheet" href="/css/login.css">
 </head>
 
 <body>
 
-  <div class="left">
-    <img class="logo" src="/image/LOGO.png" alt="AgriKnows Logo">
-  </div>
+  <div class="left"></div>
 
-  <div class="right">
-    <h2 class="welcome">Mabuhay! <span>Welcome to AgriKnows</span></h2>
-    <small>CREATE YOUR ACCOUNT TO GET STARTED</small>
-    <h2>SIGN UP</h2>
+  <div class="container">
+    <div class="box form-box">
 
-    <form <label for="username">Username</label>
-      <input type="text" placeholder="Username" id="text" required>
-      <input type="email" placeholder="Email" id="email" required>
-      <input type="password" placeholder="Password" id="password" required>
-      <button id="submit" type="submit">SIGN UP</button>
-    </form>
+      <header>
+        Mabuhay! 
+        <span>Welcome to AgriKnows</span>
+        <br>
+        <small>LOG IN TO YOUR ACCOUNT TO CONTINUE</small>
+        <h2>LOG IN</h2>
+      </header>
 
+      <form action="" method="post">
+        <div class="field input">
+          <label for="username" >Username</label>
+          <input type="text" name="username" id="username" required>
+        </div>
 
-    <p class="signup">Already have an account?
-      <a href="/pages/login.html">Log in</a>
-    </p>
-  </div>
+        <div class="field input">
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" required>
+        </div>
+
+        <div class="field input">
+          <label for="password" >Password</label>
+          <input type="password" name="password" id="password" required>
+        </div>
+      </form>
+       </div>
+          <button>LOG IN</button>
+          <p class="signup">Already have an account? 
+            <a href="/pages/login.html">Sign up</a>
+          </p>
+        </div>
+    </div>
 
 </body>
 

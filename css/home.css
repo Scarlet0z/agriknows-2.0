@@ -59,16 +59,12 @@ header {
     align-items: center;
     gap: 10px;
     padding: 8px 15px;
-    background: #f8f9fa;
+    background: transparent;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
-.user-profile:hover {
-    background: #e9ecef;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+
 
 .container {
     max-width: 1200px;
@@ -641,6 +637,13 @@ input:checked + .slider:before {
 
 .submit-btn:hover {
     background: #27ae60;
+}
+
+footer{
+    background-color: #2e7d32;
+    color: #ffff;
+    text-align: center;
+    height: 20%;
 }
 /* Responsive header */
 @media (max-width: 768px) {
