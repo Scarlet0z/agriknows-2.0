@@ -133,6 +133,11 @@ header{
   text-align: left;
 }
 
+.container a{
+  text-decoration: none;
+  color: black;
+}
+
 .container button {
   width: 50%;
   padding: 12px;
