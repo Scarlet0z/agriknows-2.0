@@ -1,6 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+<<<<<<< HEAD
 import {getAuth,createUserWithEmailAndPassword,} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+=======
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+>>>>>>> ada2e91bf17c9f5586d99a99fa523a3c68ced934
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,7 +20,25 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 //submit button /  signup button
-const submit = document.getElementById('submit');  
-submit.addEventListener("click", function (event){
- event.preventDefault();
+const submit = document.getElementById("submit");
+submit.addEventListener("click", function (event) {
+  event.preventDefault();
+
+  //inputs
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up
+      const user = userCredential.user;
+      alert("Creating Account...");
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert(errorMessage);
+      // ..
+    });
 });
