@@ -14,7 +14,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-
 //inputs
 const email = document.getElementById('email').value;
 const password = document.getElementById('password').value;
