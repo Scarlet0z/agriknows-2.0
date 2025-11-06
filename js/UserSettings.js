@@ -4,7 +4,7 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-// Your web app's Firebase configuration (copied from your login.js)
+// Your web app's Firebase configuration 
 const firebaseConfig = {
   apiKey: "AIzaSyDxTSnDc-z4wJ4fL9zf3kB3uuvZjcISNjQ",
   authDomain: "login-agriknows.firebaseapp.com",
