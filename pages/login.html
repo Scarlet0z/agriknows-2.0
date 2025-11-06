@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgriKnows Login</title>
   <link rel="stylesheet" href="/css/login.css">
 </head>
+
 <body>
 
   <div class="left">
@@ -16,14 +18,24 @@
     <h2 class="welcome">Mabuhay! <span>Welcome to AgriKnows</span></h2>
     <small>LOG IN TO YOUR ACCOUNT TO CONTINUE</small>
     <h2>LOG IN</h2>
-    <input type="text" placeholder="Username">
-    <input type="password" placeholder="Password">
+    <form action="" method="post">
+      <div class="field input">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+      </div>
+
+      <div class="field input">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+      </div>
+    </form>
     <button>LOG IN</button>
-    <p class="signup">Don’t have an account? 
-   <a href="/pages/signup.html">Sign up</a>
-</p>
+    <p class="signup">Don’t have an account?
+      <a href="/pages/signup.html">Sign up</a>
+    </p>
 
   </div>
 
 </body>
+
 </html>
