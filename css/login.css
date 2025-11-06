@@ -35,8 +35,7 @@ body {
   padding: 20px;
 }
 
-/* Right side */
-.right {
+.container {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -45,24 +44,56 @@ body {
   background: white;
   padding: 40px;
 }
-
-.right h2 {
-  margin-bottom: 20px;
-  color: #2e7d32;
-}
-
-span {
-  color: black;
+header{
+  color: #1b5e20;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
   font-style: italic;
 }
 
-.right small {
-  font-weight: bold;
-  margin-bottom: 15px;
+.container h2 {
+  padding-top: 15%;
+  margin-bottom: 20px;
+  color: #2e7d32;
+  justify-content: center;
+  align-items: center;
+  font-style: normal;
 }
 
-.right input {
-  width: 80%;
+
+.container span {
+  color: black;
+  padding-bottom: 10%;
+  font-style: italic;
+  font-weight: 200;
+  width: 50px;
+  margin-top: 15px;
+}
+
+.form-box form .field{
+  display: flex;
+  margin-bottom: 10px;
+  flex-direction: column;
+}
+
+.form-box form input input{
+   height: 40px;
+   width: 100%;
+   font-size: 16px;
+   padding: 0 10px;
+}
+.container small {
+  font-weight: 300px;
+  margin-bottom: 15px;
+  color: black;
+  font-style: normal;
+
+}
+
+.field input {
+  justify-content: center;
+  width: 100%;
   padding: 12px;
   margin: 10px 0;
   border: 2px solid #ccc;
@@ -71,7 +102,7 @@ span {
   text-align: center;
 }
 
-.right button {
+.container button {
   width: 50%;
   padding: 12px;
   background: #2e7d32;
@@ -83,7 +114,7 @@ span {
   margin-top: 15px;
 }
 
-.right button:hover {
+.container button:hover {
   background: #1b5e20;
 }
 
