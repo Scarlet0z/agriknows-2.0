@@ -48,6 +48,9 @@ header {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+::-webkit-scrollbar{
+    display: none;
+}
 
 .header-right {
     display: flex;
@@ -68,44 +71,6 @@ header {
 }
 .user-profile:hover {
   transform: scale(1.1);
-}
-
-/* Responsive Header */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-
-    .header-left {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .header-left h1 {
-        font-size: 1.6rem;
-    }
-
-    .user-profile {
-        height: 50px;
-        width: 50px;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-left h1 {
-        font-size: 1.3rem;
-    }
-
-    .agri-logo {
-        height: 55px;
-    }
-
-    .user-profile {
-        height: 45px;
-        width: auto;
-    }
 }
 
 .container {
@@ -691,4 +656,156 @@ footer {
     color: #ffff;
     text-align: center;
     height: 20%;
+}
+
+
+@media (max-width: 768px) {
+    body {
+        background-color: #fdf8ed;
+        padding: 0 10px;
+    }
+
+    /* Header: logo, title, and profile icon centered */
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .agri-logo {
+        height: 50px;
+    }
+
+    .header-left h1 {
+        font-size: 1.4rem;
+        text-align: center;
+        color: #4b6c2a;
+    }
+
+    .header-right img {
+        height: 35px;
+        width: 35px;
+    }
+
+    /* Make all sections stack neatly */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+
+    h2 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    /* Cards and grids simplified */
+    .current-status-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .reading-card {
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .reading-header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .reading-card h3 {
+        font-size: 1rem;
+    }
+
+    .value {
+        font-size: 1.3rem;
+    }
+
+    /* Device management cards */
+    .device-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #f9f9f9;
+    }
+
+    .device-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    /* History table scrolls horizontally */
+    .history-table {
+        overflow-x: auto;
+        border-radius: 10px;
+        
+    }
+
+    .history-table table {
+        min-width: 700px;
+        margin-bottom: 25px;
+    }
+
+    /* Buttons cleaner and full-width */
+    button,
+    .action-btn,
+    .export-btn,
+    .graph-mode-btn,
+    .submit-btn,
+    .delete-btn {
+        width: 100%;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+
+    /* Modal centered better */
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    footer {
+        background-color: #4b6c2a;
+        color: #fff;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+    }
+}
+
+/* Extra compact for very small screens */
+@media (max-width: 480px) {
+    .header-left h1 {
+        font-size: 1.2rem;
+    }
+
+    .reading-card {
+        text-align: center;
+    }
+
+    .value {
+        font-size: 1.2rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    footer {
+        width: 100%;
+    }
 }

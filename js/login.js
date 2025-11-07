@@ -6,12 +6,7 @@ import {
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-function preventBack(){window.history.forward()};
-setTimeout("preventBack()",0);
-window.onunload=function(){null;}
-
-
-// Your web app's Firebase configuration
+//web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDxTSnDc-z4wJ4fL9zf3kB3uuvZjcISNjQ",
   authDomain: "login-agriknows.firebaseapp.com",
@@ -26,22 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 
-  if (togglePassword && password) {
-    togglePassword.addEventListener('click', function () {
-      // Check current type
-      const isPasswordHidden = password.getAttribute('type') === 'password';
-      
-      // Toggle password visibility
-      password.setAttribute('type', isPasswordHidden ? 'text' : 'password');
+  if (togglePassword) {
+    togglePassword.addEventListener('click', function (e) {
+      // toggle the type attribute
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
 
-      // Toggle the icon image
-      togglePassword.src = isPasswordHidden 
-        ? '/image/show.png'   // When showing password
-        : '/image/hide.png';  // When hiding password
+      // toggle the eye icon
+      this.classList.toggle('fa-eye-slash');
     });
   }
 });
-
 
 
 // Initialize Firebase
@@ -65,12 +55,6 @@ submit.addEventListener("click", function (event) {
   //inputs
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
-    password.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      form.requestSubmit(); // triggers the submit event
-    }
-  });
 
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {

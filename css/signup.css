@@ -139,6 +139,8 @@ header{
 }
 
 .container button {
+  display: block;
+  margin: 20px auto 0 auto;
   width: 50%;
   padding: 12px;
   background: #2e7d32;
@@ -147,12 +149,32 @@ header{
   color: white;
   font-size: 18px;
   cursor: pointer;
-  margin-top: 15px;
+  text-align: center;
+  transition: background 0.3s ease;
 }
 
 .container button:hover {
   background: #1b5e20;
 }
+
+.forgot-password {
+  text-align: right;
+  margin-top: -5px;
+  margin-bottom: 15px; 
+}
+
+.forgot-password a {
+  color: #2a7b2e;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgot-password a:hover {
+  color: #1e4f1f;
+  text-decoration: underline;
+}
+
 
 .signup {
   margin-top: 10px;
