@@ -4,7 +4,7 @@ import {
   signInWithEmailAndPassword,
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-// Your web app's Firebase configuration
+//web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDxTSnDc-z4wJ4fL9zf3kB3uuvZjcISNjQ",
   authDomain: "login-agriknows.firebaseapp.com",
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 
-  if (togglePassword) { // Check if the element exists
+  if (togglePassword) {
     togglePassword.addEventListener('click', function (e) {
       // toggle the type attribute
       const type = password.getAttribute('type') === 'password' ? 'text' : 'password';

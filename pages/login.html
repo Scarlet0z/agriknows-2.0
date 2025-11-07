@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>AgriKnows Login</title>
   <link rel="stylesheet" href="/css/login.css">
   <script type="module" src="/js/login.js" defer></script>
@@ -25,7 +24,7 @@
         <h2>LOG IN</h2>
       </header>
 
-      <form action="" method="post">
+      <form action="" method="post" class="login-form">
 
          <div class="field input">
           <label for="password">Email</label>
@@ -37,12 +36,16 @@
           <input type="password" name="password" id="password" required>
           <img src="/image/hide.png" id="togglePassword" alt="Show/Hide Password">
         </div>
+
+        <div>
+          <a class= "forget-pass" href="">Forget Password</a>
+        </div>
+
+        <button id="submit" type="submit">LOG IN</button>
       </form>
 
-      <a href=""><u>Forgot Password</u></a> 
-
     </div>
-    <button id="submit" type="submit">LOG IN</button>
+    
     <p class="signup">Don’t have an account?
       <a href="/pages/signup.html">Sign up</a>
     </p>
