@@ -2,6 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebas
 import {
   getAuth,
   signInWithEmailAndPassword,
+  GoogleAuthprovider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 function preventBack(){window.history.forward()};
@@ -45,6 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+auth.languageCode = 'en'
+const provider = new GoogleAuthprovider();
+
+
+const googleLogin = document.getElementById("google-login-btn");
+googleLogin.addEventListener("click", function(){
+alert(5)
+
+})
 
 //submit button /  signup button
 const submit = document.getElementById("submit");
