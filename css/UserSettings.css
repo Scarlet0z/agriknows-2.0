@@ -163,9 +163,38 @@ select {
   background: #3b561f;
 }
 
+.logout-btn {
+  background-color: #fdf8ed;
+  width: 50%;
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  color: black;
+  border: 2px solid #4b6c2a; 
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #c7c9c6;
+  color: white;
+  border-color: #44553a;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
 .save-btn {
   display: block;
-  width: 100%;
+  width: 50%;
   margin-top: 15px;
   margin-bottom: 20px;
   height: 35px;
