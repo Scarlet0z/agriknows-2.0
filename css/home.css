@@ -48,6 +48,9 @@ header {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+::-webkit-scrollbar{
+    display: none;
+}
 
 .header-right {
     display: flex;
@@ -743,10 +746,12 @@ footer {
     .history-table {
         overflow-x: auto;
         border-radius: 10px;
+        
     }
 
     .history-table table {
         min-width: 700px;
+        margin-bottom: 25px;
     }
 
     /* Buttons cleaner and full-width */
@@ -776,8 +781,7 @@ footer {
         background-color: #4b6c2a;
         color: #fff;
         width: 100%;
-        padding: 10px;
-        margin-top: 20px;
+        padding: 20px;
         text-align: center;
     }
 }
