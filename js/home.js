@@ -1,5 +1,9 @@
 // JavaScript file: js/script.js
 
+function preventBack(){window.history.forward()};
+setTimeout("preventBack()",0);
+window.onunload=function(){null;}
+
 let devices = [];
 let currentPumpStatus = 'off';
 let deviceIdCounter = 1;
