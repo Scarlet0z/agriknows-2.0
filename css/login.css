@@ -77,6 +77,12 @@ header{
   flex-direction: column;
 }
 
+.form-box form input input{
+   height: 40px;
+   width: 100%;
+   font-size: 16px;
+   padding: 0 10px;
+}
 /* Password Field Styling */
 .password-field {
   position: relative;
@@ -108,12 +114,7 @@ header{
   opacity: 1;
 }
 
-.form-box form input input{
-   height: 40px;
-   width: 100%;
-   font-size: 16px;
-   padding: 0 10px;
-}
+
 .container small {
   font-weight: 300px;
   margin-bottom: 15px;
