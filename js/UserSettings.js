@@ -50,7 +50,7 @@ onAuthStateChanged(auth, (user) => {
     currentUser = user; // Store the user object
     console.log("User is signed in:", user.uid);
     
-    // 1. DISPLAY USER INFO: Use displayName for Username
+    //Use displayName for Username
     usernameInput.value = user.displayName || 'Set your username'; 
     emailInput.value = user.email || 'N/A'; // Display email
 
@@ -108,21 +108,22 @@ saveUserInfoBtn.addEventListener('click', async () => {
         return;
     }
 
-    if (updates.displayName) {
-        try {
-            await updateProfile(currentUser, updates);
-            alert('Username updated successfully!');
-            currentUser.displayName = newUsername; 
-            
-        } catch (error) {
-            console.error('Username update error:', error);
-            alert('Error updating username: ' + error.message);
-        }
+if (updates.displayName) {
+    try {
+        await updateProfile(currentUser, updates); 
+        alert('Username updated successfully!');
+        
+        currentUser.displayName = newUsername; 
+        
+    } catch (error) {
+        console.error('Username update error:', error);
+        alert('Error updating username: ' + error.message);
     }
+}
 });
 
 
-// --- PASSWORD UPDATE LOGIC (No Change) ---
+// --- PASSWORD UPDATE LOGIC---
 savePassBtn.addEventListener('click', async () => {
     if (!currentUser) {
         alert('Error: No user is currently logged in.');
@@ -168,7 +169,6 @@ savePassBtn.addEventListener('click', async () => {
 });
 
 
-// Add event listener to the logout button (No Change)
 document.getElementById('logout-btn').addEventListener('click', () => {
   signOut(auth).then(() => {
     alert('You have been logged out successfully.');

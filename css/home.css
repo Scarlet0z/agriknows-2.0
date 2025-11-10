@@ -121,7 +121,7 @@ header {
 .pump-control {
     width: fit-content;
     height: 45px;
-    display: flex; /* Corrected from inline-flexbox to flex */
+    display: inline-flexbox;
     align-items: center;
     gap: 10px;
     background-color: #f1ecec;
@@ -132,9 +132,8 @@ header {
 .crop-selector .pump-control {
     flex: 0 0 auto;
     width: auto;
-    /* Removed max-width: 220px; for responsiveness */
+    max-width: 220px;
 }
-
 
 .crop-management {
     width: 100%;
@@ -180,11 +179,7 @@ header {
     text-align: center;
     border: none;
     border-radius: 9px;
-
 }
-
-
-
 /*---------------- Current Status ----------------*/
 .current-status-grid {
     display: grid;
@@ -295,6 +290,7 @@ header {
 }
 
 .status-optimal {
+    align-items: flex-end;
     background: #c6f6d5;
     color: #276749;
 }
@@ -314,6 +310,7 @@ header {
     flex: 1;
     display: flex;
     align-items: center;
+    justify-content: row;
     gap: 10px;
     min-width: 150px;
 }
@@ -471,7 +468,6 @@ input:checked+.slider:before {
     background: #3f4638;
 }
 
-
 /*------History Table-------*/
 .history-table table {
     width: 100%;
@@ -511,7 +507,6 @@ input:checked+.slider:before {
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 200px;
-
 }
 
 .hidden {
@@ -532,16 +527,17 @@ input:checked+.slider:before {
 
 .crop-info {
     display: flex;
-    justify-content: space-between; /* Pushes the left content and right status apart */
+    gap: 15px;
     align-items: center;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
 }
+
 /* Add style for the new wrapper div */
 .crop-details {
-    flex-grow: 1; 
+    flex-grow: 1;
 }
 
 .crop-icon {
@@ -557,16 +553,17 @@ input:checked+.slider:before {
 
 .moisture-status {
     display: flex;
-    align-items: center;
+    width: 20%;
+    align-items: flex-end;
     justify-content: center;
-    width: fit-content; 
-    padding: 8px 15px; 
+    padding: 8px 15px;
     background-color: #98ce9b;
     border-radius: 20px;
     height: 40px;
 }
 
 .soil-moisture-status {
+    align-items:flex-end;
     padding: 8px 15px;
     border-radius: 20px;
     font-weight: 600;
@@ -611,15 +608,11 @@ input:checked+.slider:before {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
     /* Black overlay */
-
     /* These properties will center the modal content */
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /* This display: none; overrides the display: flex; above,
-           ensuring it's hidden. When JS sets display = 'flex', 
-           it will become visible AND centered. */
+    /* This display: none; overrides the display: flex; above, ensuring it's hidden. When JS sets display = 'flex', it will become visible AND centered. */
     display: none;
 }
 
@@ -732,7 +725,6 @@ footer {
     font-weight: 500;
 }
 
-
 @media (max-width: 768px) {
     body {
         background-color: #fdf8ed;
@@ -768,25 +760,10 @@ footer {
         gap: 20px;
     }
 
-
     h2 {
         font-size: 1.2rem;
         margin-bottom: 15px;
     }
-    
-    /* FIX: Force pump control to full width and spread label/switch */
-    .crop-controls .pump-control {
-        width: 100%;
-        /* Use space-between to push the label and the switch to opposite sides */
-        justify-content: space-between; 
-        min-width: unset;
-    }
-    /* FIX: The inner switch element should not be centered on mobile */
-    .pump-control .switch {
-        margin-top: 0; /* Remove top margin */
-        flex-shrink: 0; /* Prevent the switch from shrinking */
-    }
-
 
     /* Cards and grids simplified */
     .current-status-grid {
@@ -834,7 +811,6 @@ footer {
     .history-table {
         overflow-x: auto;
         border-radius: 10px;
-
     }
 
     .history-table table {
@@ -865,7 +841,18 @@ footer {
         grid-template-columns: 1fr;
     }
 
-    .crop-info {
+    footer {
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        width: autop;
+        padding: 10px;
+        display: flex;
+        margin-top: 20px;
+    }
+
+     .crop-info {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -878,53 +865,17 @@ footer {
         padding: 10px;
         height: auto;
         font-size: 0.9rem;
-        border-radius: 25px;
+        border-radius: 15px;
     }
-
     .soil-moisture-status {
         font-size: 0.85rem;
     }
-
-    footer {
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-        width: autop;
-        padding: 10px;
-        display: flex;
-        margin-top: 20px;
-    }
-
-
 }
 
 /* Extra compact for very small screens */
 @media (max-width: 480px) {
     .header-left h1 {
         font-size: 1.2rem;
-    }
-
-    .moisture-status {
-        width: 100%;
-        font-size: 0.85rem;
-        padding: 8px;
-        border-radius: 12px;
-    }
-
-    .crop-selector{
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Resetting previous centering attempt to allow space-between to work */
-    .pump-control{
-        align-items: center;
-        justify-content: space-between; /* Ensures label and switch are on opposite ends */
-    }
-
-    .soil-moisture-status {
-        font-size: 0.8rem;
     }
 
     .reading-card {
@@ -941,6 +892,16 @@ footer {
         align-items: flex-start;
     }
 
+     .moisture-status {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .soil-moisture-status {
+        font-size: 0.8rem;
+    }
     button {
         font-size: 0.9rem;
         padding: 8px;

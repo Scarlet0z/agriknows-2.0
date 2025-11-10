@@ -3,7 +3,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInwith
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
@@ -46,7 +46,19 @@ const provider = new GoogleAuthProvider();
 
 const googleLogin = document.getElementById("google-login-btn");
 googleLogin.addEventListener("click", function(){
-  alert(5)
+  signInWithPopup(auth, provider)
+  .then((result) => {
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const user = result.user;
+    console.log(user);
+    window.location.href = "/index.html";
+
+  }).catch((error) => {
+
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+  });
 })
 
 //submit button /  signup button
@@ -55,6 +67,7 @@ submit.addEventListener("click", function (event) {
   event.preventDefault();
 
   //inputs
+  const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
