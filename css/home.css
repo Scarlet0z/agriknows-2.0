@@ -11,6 +11,7 @@ body {
     background-color: #fdf8ed;
 }
 
+/*--------------- Header ----------------*/
 header {
     display: flex;
     justify-content: space-between;
@@ -29,8 +30,8 @@ header {
 }
 
 .agri-logo {
-    height: 70px;
-    width: auto;
+    height: 50px;
+    width: 80px;
     border-radius: 50%;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -48,31 +49,34 @@ header {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-::-webkit-scrollbar{
+
+::-webkit-scrollbar {
     display: none;
 }
 
 .header-right {
     display: flex;
-  align-items: center;
-  gap: 20px;
+    align-items: center;
+    gap: 20px;
 }
 
 .user-profile {
-  width: auto;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  background: transparent;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-}
-.user-profile:hover {
-  transform: scale(1.1);
+    width: auto;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: transparent;
+    border-radius: 25px;
+    transition: all 0.3s ease;
 }
 
+.user-profile:hover {
+    transform: scale(1.1);
+}
+
+/*--------------- Crop Management ----------------*/
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -80,25 +84,70 @@ header {
 }
 
 #current-date {
-    color: #7f8c8d;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #9c8d8d;
+    flex: 1;
+    min-width: 180px;
 }
 
 .main-content {
+    width: auto;
     display: grid;
     grid-template-columns: 1fr;
     gap: 30px;
 }
 
-/* Device Management Section */
-.device-management {
-    background: white;
+.select-crop {
+    align-items: center;
+    color: #fff;
+    background-color: #2e7d32;
+    width: 200px;
+    height: 40px;
+    border: none;
     border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-direction: row;
+    gap: 10px;
+    margin-right: 20px;
 }
 
-.device-management h2,
+.crop-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.pump-control {
+    width: fit-content;
+    height: 45px;
+    display: flex; /* Corrected from inline-flexbox to flex */
+    align-items: center;
+    gap: 10px;
+    background-color: #f1ecec;
+    padding: 6px 10px;
+    border-radius: 10px;
+}
+
+.crop-selector .pump-control {
+    flex: 0 0 auto;
+    width: auto;
+    /* Removed max-width: 220px; for responsiveness */
+}
+
+
+.crop-management {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 25px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.crop-management h2,
 .current-status h2,
 .data-history h2 {
     color: #2c3e50;
@@ -108,7 +157,35 @@ header {
     gap: 10px;
 }
 
-/*Current Status*/
+.btn:hover {
+    background: #236a6a;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--secondary);
+}
+
+.btn-secondary:hover {
+    background: #3d4a5f;
+}
+
+.btn-confirm,
+.btn-add {
+    background-color: #2e7d32;
+    color: #fff;
+    height: 30px;
+    width: auto;
+    align-items: center;
+    text-align: center;
+    border: none;
+    border-radius: 9px;
+
+}
+
+
+
+/*---------------- Current Status ----------------*/
 .current-status-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -144,7 +221,7 @@ header {
     background: #f8f9fa;
 }
 
-/*icons on current stats*/
+/*---------------- icons on current stats ----------------*/
 .reading-icon.temperature {
     color: #e74c3c;
     background: #fdedec;
@@ -171,8 +248,8 @@ header {
 }
 
 .reading-icon.pump {
-    color: #27ae60;
-    background: #e8f5e9;
+    color: #000000;
+    background: transparent;
 }
 
 .reading-card h3 {
@@ -218,8 +295,8 @@ header {
 }
 
 .status-optimal {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background: #c6f6d5;
+    color: #276749;
 }
 
 .status-wet {
@@ -232,21 +309,32 @@ header {
     color: #283593;
 }
 
-/* Pump Controls */
+/* ----------------Pump Controls ----------------*/
 .pump-control {
+    flex: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin: 15px 0;
+    gap: 10px;
+    min-width: 150px;
+}
+
+.pump-control label {
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #34495e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* The switch - the box around the slider */
 .switch {
+    margin-top: 7px;
     position: relative;
     display: inline-block;
-    width: 80px;
-    height: 40px;
+    width: 60px;
+    height: 30px;
 }
 
 /* Hide default HTML checkbox */
@@ -263,18 +351,18 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e74c3c;
-    transition: .4s;
+    background-color: #e9321e;
+    transition: .5s;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 32px;
-    width: 32px;
+    height: 23px;
+    width: 25px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     transition: .4s;
 }
 
@@ -283,7 +371,7 @@ input:checked+.slider {
 }
 
 input:checked+.slider:before {
-    transform: translateX(40px);
+    transform: translateX(27px);
 }
 
 /* Rounded sliders */
@@ -311,7 +399,7 @@ input:checked+.slider:before {
     font-weight: bold;
 }
 
-/* History Section */
+/* ----------------History Section ----------------*/
 .history-header {
     margin-bottom: 20px;
 }
@@ -383,6 +471,8 @@ input:checked+.slider:before {
     background: #3f4638;
 }
 
+
+/*------History Table-------*/
 .history-table table {
     width: 100%;
     border-collapse: collapse;
@@ -421,241 +511,225 @@ input:checked+.slider:before {
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 200px;
-    /* Reduced height */
+
 }
 
 .hidden {
     display: none;
 }
 
-/* Action Buttons, action card for pump */
-.action-card {
-    background: white;
-    border: 2px solid #e3f2fd;
-}
-
-.action-card .reading-header {
-    color: #2c3e50;
-}
-
-.action-card .reading-icon {
-    background: #e3f2fd;
-    color: #3498db;
-}
-
-.action-card h3 {
-    color: #2c3e50;
-}
-
-.action-btn {
-    padding: 10px 15px;
-    background: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 15px;
-    transition: background 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.action-btn:hover {
-    background: #2980b9;
-}
-
-.devices-list {
-    margin-top: 15px;
-}
-
-.device-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    background: #f8f9fa;
-}
-
-.device-info {
-    flex: 1;
-}
-
-.device-name {
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.device-details {
-    font-size: 0.9rem;
-    color: #7f8c8d;
-}
-
-.device-crop {
-    display: inline-block;
-    background: #e8f5e9;
-    color: #27ae60;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    margin-top: 5px;
-}
-
-.device-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.edit-btn,
-.delete-btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-}
-
-.edit-btn {
-    background: #f39c12;
-    color: white;
-}
-
-.edit-btn:hover {
-    background: #e67e22;
-}
-
-.delete-btn {
-    background: #e74c3c;
-    color: white;
-}
-
-.delete-btn:hover {
-    background: #c0392b;
+/*---------------- Current crop ----------------*/
+.status-optimal {
+    background-color: #e8f5e9;
+    color: #2e7d32;
 }
 
 .current-crop {
     margin-top: 15px;
     padding: 15px;
-    background: #e8f5e9;
     border-radius: 5px;
 }
 
-/* Modal Styles */
+.crop-info {
+    display: flex;
+    justify-content: space-between; /* Pushes the left content and right status apart */
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+/* Add style for the new wrapper div */
+.crop-details {
+    flex-grow: 1; 
+}
+
+.crop-icon {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.crop-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.moisture-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content; 
+    padding: 8px 15px; 
+    background-color: #98ce9b;
+    border-radius: 20px;
+    height: 40px;
+}
+
+.soil-moisture-status {
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-dry {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.status-moderate {
+    background: #feebcb;
+    color: #dd6b20;
+}
+
+.status-optimal {
+    background: #c6f6d5;
+    color: #276749;
+}
+
+.status-wet {
+    background: #bee3f8;
+    color: #2c5aa0;
+}
+
+.status-saturated {
+    background: #e9d8fd;
+    color: #6b46c1;
+}
+
+/* ----------------Modal Styles ----------------*/
 .modal {
     display: none;
+    /* <-- This is the crucial line to hide it by default */
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
+    overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
+    /* Black overlay */
+
+    /* These properties will center the modal content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* This display: none; overrides the display: flex; above,
+           ensuring it's hidden. When JS sets display = 'flex', 
+           it will become visible AND centered. */
+    display: none;
 }
 
 .modal-content {
-    background-color: white;
-    margin: 5% auto;
-    padding: 30px;
-    border-radius: 10px;
-    width: 80%;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 90%;
     max-width: 500px;
+    padding: 25px;
     position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    max-height: 80vh;
-    overflow-y: auto;
 }
 
-.close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 24px;
-    font-weight: bold;
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
     cursor: pointer;
-    color: #7f8c8d;
+    color: var(--secondary);
 }
 
 .form-group {
     margin-bottom: 15px;
 }
 
-.form-group label {
+.form-label {
     display: block;
     margin-bottom: 5px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    font-weight: 600;
+    color: var(--secondary);
 }
 
-.form-group input,
-.form-group select {
+.form-input,
+.form-select {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
     font-size: 1rem;
 }
 
-.form-row {
+.crop-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
 }
 
-.custom-crop-fields {
-    border: 1px solid #ddd;
+.crop-option {
+    border: 2px solid #e2e8f0;
+    border-radius: var(--border-radius);
     padding: 15px;
-    border-radius: 5px;
-    background: #f8f9fa;
-    margin-bottom: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.form-actions {
+.crop-option:hover {
+    border-color: var(--primary);
+}
+
+.crop-option.selected {
+    border-color: var(--primary);
+    background: rgba(44, 122, 123, 0.1);
+}
+
+.crop-icon-small {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.crop-name-small {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.range-inputs {
     display: flex;
     gap: 10px;
-    justify-content: space-between;
-    margin-top: 20px;
 }
 
-.form-actions .submit-btn {
-    flex: 2;
-}
-
-.form-actions .delete-btn {
+.range-input {
     flex: 1;
 }
 
-.submit-btn {
-    padding: 12px 20px;
-    background: #2ecc71;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 1rem;
-}
-
-.submit-btn:hover {
-    background: #27ae60;
-}
-
 footer {
+    width: auto;
+    padding: 15px 0;
     background-color: #2e7d32;
-    color: #ffff;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    height: 20%;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 
@@ -673,7 +747,7 @@ footer {
     }
 
     .agri-logo {
-        height: 50px;
+        height: 60px;
     }
 
     .header-left h1 {
@@ -699,6 +773,20 @@ footer {
         font-size: 1.2rem;
         margin-bottom: 15px;
     }
+    
+    /* FIX: Force pump control to full width and spread label/switch */
+    .crop-controls .pump-control {
+        width: 100%;
+        /* Use space-between to push the label and the switch to opposite sides */
+        justify-content: space-between; 
+        min-width: unset;
+    }
+    /* FIX: The inner switch element should not be centered on mobile */
+    .pump-control .switch {
+        margin-top: 0; /* Remove top margin */
+        flex-shrink: 0; /* Prevent the switch from shrinking */
+    }
+
 
     /* Cards and grids simplified */
     .current-status-grid {
@@ -729,8 +817,8 @@ footer {
 
     /* Device management cards */
     .device-item {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: 8px;
         padding: 12px;
         border-radius: 8px;
@@ -746,7 +834,7 @@ footer {
     .history-table {
         overflow-x: auto;
         border-radius: 10px;
-        
+
     }
 
     .history-table table {
@@ -777,19 +865,66 @@ footer {
         grid-template-columns: 1fr;
     }
 
-    footer {
-        background-color: #4b6c2a;
-        color: #fff;
-        width: 100%;
-        padding: 20px;
-        text-align: center;
+    .crop-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
+
+    .moisture-status {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        padding: 10px;
+        height: auto;
+        font-size: 0.9rem;
+        border-radius: 25px;
+    }
+
+    .soil-moisture-status {
+        font-size: 0.85rem;
+    }
+
+    footer {
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        width: autop;
+        padding: 10px;
+        display: flex;
+        margin-top: 20px;
+    }
+
+
 }
 
 /* Extra compact for very small screens */
 @media (max-width: 480px) {
     .header-left h1 {
         font-size: 1.2rem;
+    }
+
+    .moisture-status {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .crop-selector{
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Resetting previous centering attempt to allow space-between to work */
+    .pump-control{
+        align-items: center;
+        justify-content: space-between; /* Ensures label and switch are on opposite ends */
+    }
+
+    .soil-moisture-status {
+        font-size: 0.8rem;
     }
 
     .reading-card {
@@ -800,12 +935,23 @@ footer {
         font-size: 1.2rem;
     }
 
+    .current-crop {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
     button {
         font-size: 0.9rem;
         padding: 8px;
     }
 
     footer {
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
         width: 100%;
+        padding: 15px;
     }
 }

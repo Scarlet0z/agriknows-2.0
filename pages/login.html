@@ -1,58 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgriKnows Login</title>
-  <link rel="stylesheet" href="/css/login.css">
-  <script type="module" src="/js/login.js" defer></script>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>AgriKnows Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <script type="module" src="/js/login.js" defer></script>
+  </head>
 
-<body>
+  <body>
 
-  <div class="left"></div>
+    <div class="left"></div>
 
-  <div class="container">
-    <div class="box form-box">
+    <div class="container">
+      <div class="box form-box">
 
-      <header>
-        Mabuhay!
-        <span>Welcome to AgriKnows</span>
-        <br>
-        <small>LOG IN TO YOUR ACCOUNT TO CONTINUE</small>
-        <h2>LOG IN</h2>
-      </header>
+        <header>
+          Mabuhay!
+          <span>Welcome to AgriKnows</span>
+          <br>
+          <small>LOG IN TO YOUR ACCOUNT TO CONTINUE</small>
+          <h2>LOG IN</h2>
+        </header>
 
-      <form action="" method="post" class="login-form">
+        <form action method="post" class="login-form">
 
-         <div class="field input">
-          <label for="password">Email</label>
-          <input type="email" name="email" id="email" required>
-        </div>
+          <div class="field input">
+            <label for="password">Email</label>
+            <input type="email" name="email" id="email" required>
+          </div>
 
-        <div class="field input password-field">
-          <label for="password">Password</label>
-          <input type="password" name="password" id="password" required>
-          <img src="/image/hide.png" id="togglePassword" alt="Show/Hide Password">
-        </div>
+          <div class="field input password-field">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <img src="/image/show.png" id="togglePassword"
+              alt="Show/Hide Password">
+          </div>
 
-        <div>
-          <a class= "forget-pass" href="">Forget Password</a>
-        </div>
+          <div>
+            <a class="forget-pass" href>Forget Password</a>
+          </div>
 
-        <button id="submit" type="submit">LOG IN</button>
-      </form>
+          <button id="submit" type="submit">LOG IN</button>
+        </form>
+
+      </div>
+
+      <p class="signup">Don’t have an account?
+        <a href="/pages/signup.html">Sign up</a>
+      </p>
+
+      <div class="authenticationBTN">
+        <button id="google-login-btn">
+          <img src="/image/google.png" alt="Google">
+        </button>
+
+         <button id="google-login-btn">
+          <img src="/image/facebook.png" alt="Google">
+        </button>
+
+      </div>
 
     </div>
-    
-    <p class="signup">Don’t have an account?
-      <a href="/pages/signup.html">Sign up</a>
-    </p>
-  </div>
-  </div>
 
-
-</body>
+  </body>
 
 </html>
