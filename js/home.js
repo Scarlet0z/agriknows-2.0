@@ -1,14 +1,13 @@
-// JavaScript file: js/script.js
 
-function preventBack(){window.history.forward()};
-setTimeout("preventBack()",0);
-window.onunload=function(){null;}
+function preventBack() { window.history.forward() };
+setTimeout("preventBack()", 0);
+window.onunload = function () { null; }
 
 let devices = [];
 let currentPumpStatus = 'off';
 let deviceIdCounter = 1;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeApp();
 });
 
@@ -17,18 +16,30 @@ function initializeApp() {
     initializeEventListeners();
     loadInitialData();
     updateSoilMoistureStatus(42);
+    updateLightStatus(1); // Set initial status to Light (1)
     initializePumpControls();
 }
-
+function updateLightStatus(status) {
+    const lightValueElement = document.getElementById('lightValue');
+    const lightOptimalElement = document.getElementById('lightOptimal');
+    
+    if (status === 0) {
+        lightValueElement.textContent = 'Dark';
+    } else {
+        lightValueElement.textContent = 'Light';
+    }
+    // Clear the optimal text since it's no longer needed
+    lightOptimalElement.textContent = ' ';
+}
 function updateCurrentDate() {
     const now = new Date();
-    const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     };
-    document.getElementById('current-date').textContent = 
+    document.getElementById('current-date').textContent =
         now.toLocaleDateString('en-US', options);
 }
 
@@ -36,54 +47,170 @@ function initializeEventListeners() {
     initializeModals();
     initializeTimeFilters();
     initializeGraphMode();
-    initializeForms();
     initializeExportButton();
 }
+// Set crop and update optimal ranges
+function setCrop(cropKey, cropInfo) {
+    currentCrop = cropKey;
 
+    // Update crop display
+    document.getElementById('currentCropName').textContent = cropInfo.name;
+    document.getElementById('currentCropOptimal').textContent =
+        `Optimal: Temp ${cropInfo.temperature.min}-${cropInfo.temperature.max}°C, ` +
+        `Moisture ${cropInfo.moisture.min}-${cropInfo.moisture.max}%, ` +
+        `pH ${cropInfo.ph.min}-${cropInfo.ph.max}`;
+
+    // Update optimal ranges in cards
+    document.getElementById('tempOptimal').textContent =
+        `${cropInfo.temperature.min}-${cropInfo.temperature.max}°C`;
+    document.getElementById('moistureOptimal').textContent =
+        `${cropInfo.moisture.min}-${cropInfo.moisture.max}%`;
+    document.getElementById('phOptimal').textContent =
+        `${cropInfo.ph.min}-${cropInfo.ph.max}`;
+    document.getElementById('humidityOptimal').textContent =
+        `${cropInfo.humidity.min}-${cropInfo.humidity.max}%`;
+}
+
+// Modal handling
 function initializeModals() {
-    // Device modal
-    const deviceModal = document.getElementById('device-modal');
-    const addDeviceBtn = document.getElementById('add-device-btn');
-    const deviceClose = deviceModal.querySelector('.close');
 
-    addDeviceBtn.addEventListener('click', () => {
-        deviceModal.style.display = 'block';
+// ---  Get all modal elements ---
+    const selectCropModal = document.getElementById('selectCropModal');
+    const addCropModal = document.getElementById('addCropModal');
+
+    // --- Get buttons that open modals ---
+    const selectCropBtn = document.getElementById('selectCropBtn');
+    const addCropBtn = document.getElementById('addCropBtn');
+
+    // ---  Get all close buttons ---
+    const closeButtons = document.querySelectorAll('.close-modal');
+
+    // ---  Open Modals ---
+    // Check if the elements exist before adding listeners
+    if (selectCropBtn && selectCropModal) {
+        selectCropBtn.addEventListener('click', () => {
+            selectCropModal.style.display = 'flex';
+        });
+    }
+
+    if (addCropBtn && addCropModal) {
+        addCropBtn.addEventListener('click', () => {
+            addCropModal.style.display = 'flex';
+        });
+    }
+
+    // ---  Close Modals (with 'x' buttons) ---
+    closeButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            // Find the parent modal and hide it
+            event.target.closest('.modal').style.display = 'none';
+        });
     });
 
-    deviceClose.addEventListener('click', () => {
-        deviceModal.style.display = 'none';
-    });
-
-    // Edit device modal
-    const editDeviceModal = document.getElementById('edit-device-modal');
-    const editDeviceClose = editDeviceModal.querySelector('.close');
-
-    editDeviceClose.addEventListener('click', () => {
-        editDeviceModal.style.display = 'none';
-    });
-
-    // Close modals when clicking outside
+    // ---  Close Modals (by clicking outside) ---
     window.addEventListener('click', (event) => {
-        if (event.target === deviceModal) {
-            deviceModal.style.display = 'none';
+        if (event.target === selectCropModal) {
+            selectCropModal.style.display = 'none';
         }
-        if (event.target === editDeviceModal) {
-            editDeviceModal.style.display = 'none';
+        if (event.target === addCropModal) {
+            addCropModal.style.display = 'none';
         }
     });
 
-    // Crop selection in device form
-    const cropSelect = document.getElementById('device-crop');
-    const customCropFields = document.getElementById('custom-crop-fields');
+    // ---  Crop Selection Logic ---
+    let selectedCrop = null; // Keep track of the selected crop
+    const cropOptions = document.querySelectorAll('.crop-option');
     
-    cropSelect.addEventListener('change', function() {
-        if (this.value === 'custom') {
-            customCropFields.classList.remove('hidden');
+    cropOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove 'selected' class from all options
+            cropOptions.forEach(o => o.classList.remove('selected'));
+            // Add 'selected' class to the clicked one
+            option.classList.add('selected');
+            selectedCrop = option.getAttribute('data-crop');
+        });
+    });
+
+    // ---  Confirm Crop Selection Button ---
+    document.getElementById('confirmCropBtn').addEventListener('click', () => {
+        if (selectedCrop) {
+            setCrop(selectedCrop, cropData[selectedCrop]);
+            selectCropModal.style.display = 'none'; // Hide modal
+            cropOptions.forEach(o => o.classList.remove('selected')); // Clear selection
+            selectedCrop = null; // Reset
         } else {
-            customCropFields.classList.add('hidden');
+            alert('Please select a crop');
         }
+    });
+
+    // ---  Add Custom Crop Form ---
+    document.getElementById('addCropForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cropName = document.getElementById('customCropName').value;
+        const tempMin = parseFloat(document.getElementById('tempMin').value);
+        const tempMax = parseFloat(document.getElementById('tempMax').value);
+        const moistureMin = parseFloat(document.getElementById('moistureMin').value);
+        const moistureMax = parseFloat(document.getElementById('moistureMax').value);
+        const phMin = parseFloat(document.getElementById('phMin').value);
+        const phMax = parseFloat(document.getElementById('phMax').value);
+        const humidityMin = parseFloat(document.getElementById('humidityMin').value);
+        const humidityMax = parseFloat(document.getElementById('humidityMax').value);
+
+        // Create custom crop object
+        const customCrop = {
+            name: cropName,
+            temperature: { min: tempMin, max: tempMax },
+            moisture: { min: moistureMin, max: moistureMax },
+            ph: { min: phMin, max: phMax },
+            humidity: { min: humidityMin, max: humidityMax },
+        };
+
+        // Set the custom crop
+        setCrop('custom', customCrop);
+
+        alert(`Custom crop "${cropName}" added successfully!`);
+        document.getElementById('addCropForm').reset();
+        addCropModal.style.display = 'none'; // Hide modal
     });
 }
+// Crop data with optimal environmental conditions
+const cropData = {
+    corn: {
+        name: "Corn",
+        temperature: { min: 18, max: 30 },
+        moisture: { min: 50, max: 70 },
+        ph: { min: 5.8, max: 7.0 },
+        humidity: { min: 50, max: 70 },
+    },
+    rice: {
+        name: "Rice",
+        temperature: { min: 20, max: 35 },
+        moisture: { min: 70, max: 90 },
+        ph: { min: 5.0, max: 6.5 },
+        humidity: { min: 70, max: 85 },
+    },
+    wheat: {
+        name: "Wheat",
+        temperature: { min: 10, max: 25 },
+        moisture: { min: 40, max: 60 },
+        ph: { min: 6.0, max: 7.5 },
+        humidity: { min: 40, max: 60 },
+    },
+    tomato: {
+        name: "Tomato",
+        temperature: { min: 18, max: 27 },
+        moisture: { min: 60, max: 80 },
+        ph: { min: 5.5, max: 6.8 },
+        humidity: { min: 65, max: 85 },
+    },
+    lettuce: {
+        name: "Lettuce",
+        temperature: { min: 7, max: 20 },
+        moisture: { min: 70, max: 85 },
+        ph: { min: 6.0, max: 7.0 },
+        humidity: { min: 70, max: 80 },
+    }
+};
 
 function initializeTimeFilters() {
     const timeFilters = document.querySelectorAll('.time-filter');
@@ -116,26 +243,6 @@ function initializeGraphMode() {
     });
 }
 
-function initializeForms() {
-    // Device form
-    const deviceForm = document.getElementById('device-form');
-    deviceForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        addDevice();
-    });
-
-    // Edit device form
-    const editDeviceForm = document.getElementById('edit-device-form');
-    editDeviceForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        updateDevice();
-    });
-
-    // Delete device button
-    const deleteDeviceBtn = document.getElementById('delete-device-btn');
-    deleteDeviceBtn.addEventListener('click', deleteDevice);
-}
-
 function initializeExportButton() {
     const exportBtn = document.getElementById('export-btn');
     exportBtn.addEventListener('click', exportData);
@@ -145,7 +252,7 @@ function initializePumpControls() {
     const pumpSwitch = document.getElementById('pump-switch');
     const pumpStatusElement = document.getElementById('pump-status');
 
-    pumpSwitch.addEventListener('change', function() {
+    pumpSwitch.addEventListener('change', function () {
         setPumpStatus(this.checked ? 'on' : 'off');
     });
 
@@ -155,7 +262,7 @@ function initializePumpControls() {
 function setPumpStatus(status) {
     const pumpSwitch = document.getElementById('pump-switch');
     const pumpStatusElement = document.getElementById('pump-status');
-    
+
     if (status === 'on') {
         pumpSwitch.checked = true;
         pumpStatusElement.innerHTML = 'Status: <span class="status-on">On</span>';
@@ -169,14 +276,14 @@ function setPumpStatus(status) {
         document.querySelector('.action-card').style.borderColor = '#e3f2fd';
         document.querySelector('.action-card').style.background = 'white';
     }
-    
+
     // Update last action time
-  const now = new Date();
+    const now = new Date();
     const timeString = now.toLocaleTimeString();
-    document.querySelector('.action-card .last-updated').textContent = 
+    document.querySelector('.action-card .last-updated').textContent =
         `Last action: ${timeString}`;
 
- const message = status === 'on' ? 'Water pump turned ON' : 'Water pump turned OFF';
+    const message = status === 'on' ? 'Water pump turned ON' : 'Water pump turned OFF';
     showNotification(message, status);
 }
 function showNotification(message, type) {
@@ -187,7 +294,7 @@ function showNotification(message, type) {
         <i class="fas fa-${type === 'on' ? 'check-circle' : 'times-circle'}"></i>
         ${message}
     `;
- // Add styles for notification
+    // Add styles for notification
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -203,8 +310,8 @@ function showNotification(message, type) {
         align-items: center;
         gap: 8px;
     `;
- document.body.appendChild(notification);
-    
+    document.body.appendChild(notification);
+
     // Remove notification after 3 seconds
     setTimeout(() => {
         notification.remove();
@@ -225,7 +332,7 @@ function loadInitialData() {
         },
         {
             id: 2,
-            name: 'Sensor 2', 
+            name: 'Sensor 2',
             location: 'Field B',
             crop: 'Corn',
             cropType: 'predefined'
@@ -233,177 +340,62 @@ function loadInitialData() {
     ];
     deviceIdCounter = 3;
     renderDevices();
-    
+
     // Initialize pump to off state
     setPumpStatus('off');
 }
 
-function renderDevices() {
-    const devicesList = document.getElementById('devices-list');
-    devicesList.innerHTML = '';
-
-    if (devices.length === 0) {
-        devicesList.innerHTML = '<p class="no-devices">No devices added yet. Click "Add Device" to get started.</p>';
-        return;
-    }
-
-    devices.forEach(device => {
-        const deviceElement = document.createElement('div');
-        deviceElement.className = 'device-item';
-        deviceElement.innerHTML = `
-            <div class="device-info">
-                <div class="device-name">${device.name}</div>
-                <div class="device-details">
-                    Location: ${device.location} | 
-                    Crop: <span class="device-crop">${device.crop}</span>
-                </div>
-            </div>
-            <div class="device-actions">
-                <button class="edit-btn" data-id="${device.id}">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-           
-            </div>
-        `;
-        devicesList.appendChild(deviceElement);
-    });
-
-    // Add event listeners to action buttons
-    initializeDeviceActions();
-}
-
-function initializeDeviceActions() {
-    const editButtons = document.querySelectorAll('.edit-btn');
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    
-    editButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const deviceId = parseInt(this.getAttribute('data-id'));
-            editDevice(deviceId);
-        });
-    });
-    
-    deleteButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const deviceId = parseInt(this.getAttribute('data-id'));
-            if (confirm('Are you sure you want to delete this device?')) {
-                deleteDevice(deviceId);
-            }
-        });
-    });
-}
-
-function addDevice() {
-    const name = document.getElementById('device-name').value;
-    const location = document.getElementById('device-location').value;
-    const crop = document.getElementById('device-crop').value;
-    
-    let cropName = crop;
-    let cropType = 'predefined';
-    
-    if (crop === 'custom') {
-        cropName = document.getElementById('custom-crop-name').value || 'Custom Crop';
-        cropType = 'custom';
-    }
-    
-    const newDevice = {
-        id: deviceIdCounter++,
-        name: name,
-        location: location,
-        crop: cropName,
-        cropType: cropType
-    };
-    
-    devices.push(newDevice);
-    renderDevices();
-    
-    // Close modal and reset form
-    document.getElementById('device-modal').style.display = 'none';
-    document.getElementById('device-form').reset();
-    document.getElementById('custom-crop-fields').classList.add('hidden');
-    
-    alert(`Device "${name}" added successfully with crop "${cropName}"!`);
-}
-
-function editDevice(deviceId) {
-    const device = devices.find(d => d.id === deviceId);
-    if (!device) return;
-
-    document.getElementById('edit-device-id').value = device.id;
-    document.getElementById('edit-device-name').value = device.name;
-    document.getElementById('edit-device-location').value = device.location;
-    document.getElementById('edit-device-crop').value = device.crop;
-
-    document.getElementById('edit-device-modal').style.display = 'block';
-}
-
-function updateDevice() {
-    const deviceId = parseInt(document.getElementById('edit-device-id').value);
-    const name = document.getElementById('edit-device-name').value;
-    const location = document.getElementById('edit-device-location').value;
-    
-    const deviceIndex = devices.findIndex(d => d.id === deviceId);
-    if (deviceIndex !== -1) {
-        devices[deviceIndex].name = name;
-        devices[deviceIndex].location = location;
-        
-        renderDevices();
-        document.getElementById('edit-device-modal').style.display = 'none';
-        alert('Device updated successfully!');
-    }
-}
-
-function deleteDevice(deviceId) {
-    if (typeof deviceId !== 'number') {
-        deviceId = parseInt(document.getElementById('edit-device-id').value);
-    }
-    
-    devices = devices.filter(d => d.id !== deviceId);
-    renderDevices();
-    document.getElementById('edit-device-modal').style.display = 'none';
-    alert('Device deleted successfully!');
-}
-
 function loadHistoryData(timeRange) {
-    // Sample data with device information
     const sampleData = [
         {
             time: '10:00 AM',
-            device: 'Sensor 1',
             soilMoisture: '45%',
             humidity: '62%',
             temperature: '22.1°C',
-            lightLevel: '720 lux',
+           lightLevel: 'Light',
             phLevel: '6.7 pH'
         },
         {
             time: '09:45 AM',
-            device: 'Sensor 2',
             soilMoisture: '43%',
             humidity: '64%',
             temperature: '21.8°C',
-            lightLevel: '680 lux',
+            lightLevel: 'Light',
             phLevel: '6.8 pH'
         },
         {
             time: '09:30 AM',
-            device: 'Sensor 1',
             soilMoisture: '41%',
             humidity: '63%',
             temperature: '21.5°C',
-            lightLevel: '750 lux',
+            lightLevel: 'Light',
             phLevel: '6.7 pH'
+        },
+        { // NEW ENTRY 4
+            time: '09:15 AM',
+            soilMoisture: '44%',
+            humidity: '65%',
+            temperature: '22.3°C',
+          lightLevel: 'Dark',
+            phLevel: '6.9 pH'
+        },
+        { // NEW ENTRY 5
+            time: '09:00 AM',
+            soilMoisture: '42%',
+            humidity: '62%',
+            temperature: '22.0°C',
+          lightLevel: 'Dark',
+            phLevel: '6.8 pH'
         }
     ];
 
     const tableBody = document.getElementById('history-data');
-    tableBody.innerHTML = '';
+    tableBody.innerHTML = ''; // Clear previous data
 
     sampleData.forEach(data => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${data.time}</td>
-            <td>${data.device}</td>
             <td>${data.soilMoisture}</td>
             <td>${data.humidity}</td>
             <td>${data.temperature}</td>
@@ -419,7 +411,6 @@ function initializeCharts() {
     initializeBarChart('soil-moisture-chart', 'Soil Moisture', [45, 43, 41, 44, 42], '#3498db');
     initializeBarChart('humidity-chart', 'Humidity', [62, 64, 63, 65, 62], '#2980b9');
     initializeBarChart('temperature-chart', 'Temperature', [22.1, 21.8, 21.5, 22.3, 22.0], '#e74c3c');
-    initializeBarChart('light-level-chart', 'Light Level', [720, 680, 750, 700, 780], '#f39c12');
     initializeBarChart('ph-level-chart', 'pH Level', [6.7, 6.8, 6.7, 6.9, 6.8], '#9b59b6');
 }
 
@@ -494,18 +485,18 @@ function initializeBarChart(canvasId, label, data, color) {
 function exportData() {
     // Create CSV content
     let csvContent = "Time,Device,Soil Moisture,Humidity,Temperature,Light Level,pH Level\n";
-    
+
     // Add sample data (in real app, this would be your actual data)
     const sampleData = [
-        ['10:00 AM', 'Sensor 1', '45%', '62%', '22.1°C', '720 lux', '6.7 pH'],
-        ['09:45 AM', 'Sensor 2', '43%', '64%', '21.8°C', '680 lux', '6.8 pH'],
-        ['09:30 AM', 'Sensor 1', '41%', '63%', '21.5°C', '750 lux', '6.7 pH']
+        ['10:00 AM', '45%', '62%', '22.1°C', 'Light', '6.7 pH'],
+        ['09:45 AM', '43%', '64%', '21.8°C', 'Light', '6.8 pH'],
+        ['09:30 AM', '41%', '63%', '21.5°C', 'Light', '6.7 pH']
     ];
-    
+
     sampleData.forEach(row => {
         csvContent += row.join(',') + '\n';
     });
-    
+
     // Create and download file
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -516,14 +507,14 @@ function exportData() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
+
     alert('Data exported successfully!');
 }
 
 function updateSoilMoistureStatus(moistureLevel) {
     const statusElement = document.getElementById('soil-moisture-status');
     let status, message, className;
-    
+
     if (moistureLevel < 20) {
         status = 'Very Dry';
         message = 'Irrigation needed immediately';
@@ -545,7 +536,9 @@ function updateSoilMoistureStatus(moistureLevel) {
         message = 'Reduce irrigation';
         className = 'status-saturated';
     }
-    
+        statusElement.textContent = `Soil Moisture: ${status}`;
+        statusElement.className = `soil-moisture-status ${statusClass}`;
+
     statusElement.textContent = `${status}: ${message}`;
     statusElement.className = `status-message ${className}`;
 }

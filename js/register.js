@@ -2,6 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebas
 import {
   getAuth,
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
@@ -15,26 +17,49 @@ const firebaseConfig = {
 };
 
 
-//Show/Hide Password 
+//show pass
 document.addEventListener('DOMContentLoaded', () => {
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 
-  if (togglePassword) { // Check if the element exists
-    togglePassword.addEventListener('click', function (e) {
-      // toggle the type attribute
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
+  if (togglePassword && password) {
+    togglePassword.addEventListener('click', (e) => {
+      const isPasswordHidden = password.getAttribute('type') === 'password';
 
-      // toggle the eye icon
-      this.classList.toggle('fa-eye-slash');
+      // Toggle password visibility
+      password.setAttribute('type', isPasswordHidden ? 'text' : 'password');
+
+      // Toggle the icon image
+      togglePassword.src = isPasswordHidden 
+        ? '/image/hide.png'
+        : '/image/show.png';
     });
   }
 });
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+auth.languageCode = 'en' 
+const provider = new GoogleAuthProvider();
+
+const googleLogin = document.getElementById("google-login-btn");
+googleLogin.addEventListener("click", function(){
+  signInWithPopup(auth, provider)
+  .then((result) => {
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const user = result.user;
+    console.log(user);
+    window.location.href = "/index.html";
+
+  }).catch((error) => {
+
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+  });
+})
 
 //submit button /  signup button
 const submit = document.getElementById("submit");
@@ -42,6 +67,7 @@ submit.addEventListener("click", function (event) {
   event.preventDefault();
 
   //inputs
+  const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 

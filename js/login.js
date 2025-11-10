@@ -16,19 +16,22 @@ const firebaseConfig = {
   appId: "1:281355587751:web:fb479b62b5036b44b68b82",
 };
 
-//Show/Hide Password 
+//show pass
 document.addEventListener('DOMContentLoaded', () => {
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 
-  if (togglePassword) {
-    togglePassword.addEventListener('click', function (e) {
-      // toggle the type attribute
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
+  if (togglePassword && password) {
+    togglePassword.addEventListener('click', () => {
+      const isPasswordHidden = password.getAttribute('type') === 'password';
 
-      // toggle the eye icon
-      this.classList.toggle('fa-eye-slash');
+      // Toggle password visibility
+      password.setAttribute('type', isPasswordHidden ? 'text' : 'password');
+
+      // Toggle the icon image
+      togglePassword.src = isPasswordHidden 
+        ? '/image/hide.png'  // when showing password
+        : '/image/show.png'; // when hiding password
     });
   }
 });
