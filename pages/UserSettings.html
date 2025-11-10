@@ -9,12 +9,11 @@
   <meta http-equiv="Expires" content="0">
   <title>User Settings | AgriKnows</title>
   <link rel="stylesheet" href="/css/UserSettings.css" />
-</head>
+  </head>
 
 <body>
   <div class="dashboard">
 
-    <!-- Header -->
     <div class="container">
       <header>
         <div class="header-left">
@@ -33,7 +32,6 @@
         <a href="/index.html" class="back-btn">← Back to Home</a>
         <h1>User Settings</h1>
 
-        <!-- Personal Information -->
         <section class="card">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path fill="#000"
@@ -42,15 +40,14 @@
 
           <div class="form-row">
             <label>Username</label>
-            <input type="text" value="Juan Dela Cruz" />
+            <input type="text" value="Juan Dela Cruz" id="user-username" />
           </div>
           <div class="form-row">
             <label>Email</label>
-            <input type="email" value="juandelacruz@gmail.com" />
+            <input type="email" value="juandelacruz@gmail.com" id="user-email" />
           </div>
         </section>
 
-        <!-- Security -->
         <section class="card">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path fill="#000"
@@ -59,21 +56,30 @@
 
           <div class="form-row">
             <label>Current Password</label>
-            <input type="password" value="**********" />
+            <input type="password" value="" id="current-password" placeholder="Enter current password" />
           </div>
+          
           <div class="form-row">
             <label>New Password</label>
-            <input type="password" />
+            <div class="password-input-container">
+              <input type="password" id="new-password" placeholder="Enter new password" />
+              <span class="password-toggle" data-target="new-password">🙈</span>
+            </div>
           </div>
+          
           <div class="form-row">
             <label>Confirm Password</label>
-            <input type="password" />
+            <div class="password-input-container">
+              <input type="password" id="confirm-password" placeholder="Confirm new password" />
+              <span class="password-toggle" data-target="confirm-password">🙈</span>
+            </div>
           </div>
-          <button class="btn">Save Password</button>
+          
+          <button class="btn" id="save-password-btn">Save Password</button>
         </section>
 
         <div class="button-row">
-          <button class="btn save-btn">SAVE</button>
+          <button class="btn save-btn" id="save-user-info-btn">SAVE</button>
           <button class="btn logout-btn" id="logout-btn">Log Out</button>
         </div>
 
