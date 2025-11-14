@@ -2,8 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebas
 import {
   getAuth,
   signInWithEmailAndPassword,
-  GoogleAuthprovider,
-  signInWithPopup
+  GoogleAuthProvider,
+  signInWithPopup,
+  
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 //web app's Firebase configuration
@@ -17,40 +18,58 @@ const firebaseConfig = {
 };
 
 //show pass
-document.addEventListener('DOMContentLoaded', () => {
-  const togglePassword = document.getElementById('togglePassword');
-  const password = document.getElementById('password');
+document.addEventListener("DOMContentLoaded", () => {
+  const togglePassword = document.getElementById("togglePassword");
+  const password = document.getElementById("password");
 
   if (togglePassword && password) {
-    togglePassword.addEventListener('click', () => {
-      const isPasswordHidden = password.getAttribute('type') === 'password';
+    togglePassword.addEventListener("click", () => {
+      const isPasswordHidden = password.getAttribute("type") === "password";
 
       // Toggle password visibility
-      password.setAttribute('type', isPasswordHidden ? 'text' : 'password');
+      password.setAttribute("type", isPasswordHidden ? "text" : "password");
 
       // Toggle the icon image
-      togglePassword.src = isPasswordHidden 
-        ? '/image/hide.png'  // when showing password
-        : '/image/show.png'; // when hiding password
+      togglePassword.src = isPasswordHidden
+        ? "/image/hide.png" // when showing password
+        : "/image/show.png"; // when hiding password
     });
   }
 });
 
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-auth.languageCode = 'en'
-const provider = new GoogleAuthprovider();
 
+// --- ADD THIS: Google Sign-In Logic ---
+const googleLoginBtn = document.getElementById("google-login-btn");
+const provider = new GoogleAuthProvider(); // Create a Google provider instance
 
-const googleLogin = document.getElementById("google-login-btn");
-googleLogin.addEventListener("click", function(){
-alert(5)
+googleLoginBtn.addEventListener("click", (event) => {
+  event.preventDefault(); // Prevent default button behavior
 
-})
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
 
-//submit button /  signup button
+      console.log("Signed in with Google:", user);
+      alert("Signed In Successfully with Google!");
+      window.location.href = "/index.html"; // Redirect to your main page
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Google Sign-In Error:", errorMessage);
+      alert(`Error: ${errorMessage}`);
+    });
+});
+// ------------------------------------
+
 const submit = document.getElementById("submit");
 submit.addEventListener("click", function (event) {
   event.preventDefault();
