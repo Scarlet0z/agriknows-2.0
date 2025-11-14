@@ -1,4 +1,3 @@
-
 function preventBack() { window.history.forward() };
 setTimeout("preventBack()", 0);
 window.onunload = function () { null; }
@@ -7,174 +6,13 @@ let devices = [];
 let currentPumpStatus = 'off';
 let deviceIdCounter = 1;
 
-document.addEventListener('DOMContentLoaded', function () {
-    initializeApp();
-});
+// **NEW**: Global object to hold all crop data (predefined + custom)
+let allCropData = {};
+// **NEW**: Variable to track the currently selected crop key
+let currentCropKey = null;
 
-function initializeApp() {
-    updateCurrentDate();
-    initializeEventListeners();
-    loadInitialData();
-    updateSoilMoistureStatus(42);
-    updateLightStatus(1); // Set initial status to Light (1)
-    initializePumpControls();
-}
-function updateLightStatus(status) {
-    const lightValueElement = document.getElementById('lightValue');
-    const lightOptimalElement = document.getElementById('lightOptimal');
-    
-    if (status === 0) {
-        lightValueElement.textContent = 'Dark';
-    } else {
-        lightValueElement.textContent = 'Light';
-    }
-    // Clear the optimal text since it's no longer needed
-    lightOptimalElement.textContent = ' ';
-}
-function updateCurrentDate() {
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    document.getElementById('current-date').textContent =
-        now.toLocaleDateString('en-US', options);
-}
-
-function initializeEventListeners() {
-    initializeModals();
-    initializeTimeFilters();
-    initializeGraphMode();
-    initializeExportButton();
-}
-// Set crop and update optimal ranges
-function setCrop(cropKey, cropInfo) {
-    currentCrop = cropKey;
-
-    // Update crop display
-    document.getElementById('currentCropName').textContent = cropInfo.name;
-    document.getElementById('currentCropOptimal').textContent =
-        `Optimal: Temp ${cropInfo.temperature.min}-${cropInfo.temperature.max}°C, ` +
-        `Moisture ${cropInfo.moisture.min}-${cropInfo.moisture.max}%, ` +
-        `pH ${cropInfo.ph.min}-${cropInfo.ph.max}`;
-
-    // Update optimal ranges in cards
-    document.getElementById('tempOptimal').textContent =
-        `${cropInfo.temperature.min}-${cropInfo.temperature.max}°C`;
-    document.getElementById('moistureOptimal').textContent =
-        `${cropInfo.moisture.min}-${cropInfo.moisture.max}%`;
-    document.getElementById('phOptimal').textContent =
-        `${cropInfo.ph.min}-${cropInfo.ph.max}`;
-    document.getElementById('humidityOptimal').textContent =
-        `${cropInfo.humidity.min}-${cropInfo.humidity.max}%`;
-}
-
-// Modal handling
-function initializeModals() {
-
-// ---  Get all modal elements ---
-    const selectCropModal = document.getElementById('selectCropModal');
-    const addCropModal = document.getElementById('addCropModal');
-
-    // --- Get buttons that open modals ---
-    const selectCropBtn = document.getElementById('selectCropBtn');
-    const addCropBtn = document.getElementById('addCropBtn');
-
-    // ---  Get all close buttons ---
-    const closeButtons = document.querySelectorAll('.close-modal');
-
-    // ---  Open Modals ---
-    // Check if the elements exist before adding listeners
-    if (selectCropBtn && selectCropModal) {
-        selectCropBtn.addEventListener('click', () => {
-            selectCropModal.style.display = 'flex';
-        });
-    }
-
-    if (addCropBtn && addCropModal) {
-        addCropBtn.addEventListener('click', () => {
-            addCropModal.style.display = 'flex';
-        });
-    }
-
-    // ---  Close Modals (with 'x' buttons) ---
-    closeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            // Find the parent modal and hide it
-            event.target.closest('.modal').style.display = 'none';
-        });
-    });
-
-    // ---  Close Modals (by clicking outside) ---
-    window.addEventListener('click', (event) => {
-        if (event.target === selectCropModal) {
-            selectCropModal.style.display = 'none';
-        }
-        if (event.target === addCropModal) {
-            addCropModal.style.display = 'none';
-        }
-    });
-
-    // ---  Crop Selection Logic ---
-    let selectedCrop = null; // Keep track of the selected crop
-    const cropOptions = document.querySelectorAll('.crop-option');
-    
-    cropOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            // Remove 'selected' class from all options
-            cropOptions.forEach(o => o.classList.remove('selected'));
-            // Add 'selected' class to the clicked one
-            option.classList.add('selected');
-            selectedCrop = option.getAttribute('data-crop');
-        });
-    });
-
-    // ---  Confirm Crop Selection Button ---
-    document.getElementById('confirmCropBtn').addEventListener('click', () => {
-        if (selectedCrop) {
-            setCrop(selectedCrop, cropData[selectedCrop]);
-            selectCropModal.style.display = 'none'; // Hide modal
-            cropOptions.forEach(o => o.classList.remove('selected')); // Clear selection
-            selectedCrop = null; // Reset
-        } else {
-            alert('Please select a crop');
-        }
-    });
-
-    // ---  Add Custom Crop Form ---
-    document.getElementById('addCropForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const cropName = document.getElementById('customCropName').value;
-        const tempMin = parseFloat(document.getElementById('tempMin').value);
-        const tempMax = parseFloat(document.getElementById('tempMax').value);
-        const moistureMin = parseFloat(document.getElementById('moistureMin').value);
-        const moistureMax = parseFloat(document.getElementById('moistureMax').value);
-        const phMin = parseFloat(document.getElementById('phMin').value);
-        const phMax = parseFloat(document.getElementById('phMax').value);
-        const humidityMin = parseFloat(document.getElementById('humidityMin').value);
-        const humidityMax = parseFloat(document.getElementById('humidityMax').value);
-
-        // Create custom crop object
-        const customCrop = {
-            name: cropName,
-            temperature: { min: tempMin, max: tempMax },
-            moisture: { min: moistureMin, max: moistureMax },
-            ph: { min: phMin, max: phMax },
-            humidity: { min: humidityMin, max: humidityMax },
-        };
-
-        // Set the custom crop
-        setCrop('custom', customCrop);
-
-        alert(`Custom crop "${cropName}" added successfully!`);
-        document.getElementById('addCropForm').reset();
-        addCropModal.style.display = 'none'; // Hide modal
-    });
-}
-// Crop data with optimal environmental conditions
-const cropData = {
+// Crop data with optimal environmental conditions (Predefined part)
+const PREDEFINED_CROP_DATA = {
     corn: {
         name: "Corn",
         temperature: { min: 18, max: 30 },
@@ -211,6 +49,373 @@ const cropData = {
         humidity: { min: 70, max: 80 },
     }
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+    initializeApp();
+});
+
+function initializeApp() {
+    updateCurrentDate();
+    loadAllCropData(); // **MODIFIED**: Load crop data (including custom) from storage
+    initializeEventListeners();
+    loadInitialData();
+    updateSoilMoistureStatus(42);
+    updateLightStatus(1); // Set initial status to Light (1)
+    initializePumpControls(); // **MODIFIED**: Initializes pump state from storage
+}
+function updateLightStatus(status) {
+    const lightValueElement = document.getElementById('lightValue');
+    const lightOptimalElement = document.getElementById('lightOptimal');
+    
+    if (status === 0) {
+        lightValueElement.textContent = 'Dark';
+    } else {
+        lightValueElement.textContent = 'Light';
+    }
+    // Clear the optimal text since it's no longer needed
+    lightOptimalElement.textContent = ' ';
+}
+function updateCurrentDate() {
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    document.getElementById('current-date').textContent =
+        now.toLocaleDateString('en-US', options);
+}
+
+function initializeEventListeners() {
+    initializeModals();
+    initializeTimeFilters();
+    initializeGraphMode();
+    initializeExportButton();
+}
+
+// **NEW FUNCTION** to load custom crops from localStorage
+function loadAllCropData() {
+    const customCropsJson = localStorage.getItem('customCrops');
+    const customCrops = customCropsJson ? JSON.parse(customCropsJson) : {};
+    
+    // Merge predefined crops and custom crops
+    allCropData = { ...PREDEFINED_CROP_DATA, ...customCrops };
+
+    // Check if a crop was previously selected and is still valid
+    const lastSelectedCropKey = localStorage.getItem('selectedCropKey');
+    if (lastSelectedCropKey && allCropData[lastSelectedCropKey]) {
+        setCrop(lastSelectedCropKey, allCropData[lastSelectedCropKey]);
+    } else {
+        // Fallback or initial state
+        setCrop('none', {
+            name: "No crop selected",
+            temperature: { min: 0, max: 0 },
+            moisture: { min: 0, max: 0 },
+            ph: { min: 0, max: 0 },
+            humidity: { min: 0, max: 0 },
+        });
+    }
+}
+
+// **NEW FUNCTION** to save custom crops to localStorage
+function saveCustomCrops(customCrops) {
+    localStorage.setItem('customCrops', JSON.stringify(customCrops));
+    
+    // Re-merge data to update the in-memory cache
+    allCropData = { ...PREDEFINED_CROP_DATA, ...customCrops };
+}
+
+// **MODIFIED**: Set crop and update optimal ranges
+function setCrop(cropKey, cropInfo) {
+    currentCropKey = cropKey;
+    localStorage.setItem('selectedCropKey', cropKey); // Save the selected crop key for persistence
+
+    // Update crop display
+    document.getElementById('currentCropName').textContent = cropInfo.name;
+    document.getElementById('currentCropOptimal').textContent =
+        `Optimal: Temp ${cropInfo.temperature.min}-${cropInfo.temperature.max}°C, ` +
+        `Moisture ${cropInfo.moisture.min}-${cropInfo.moisture.max}%, ` +
+        `pH ${cropInfo.ph.min}-${cropInfo.ph.max}`;
+
+    // Update optimal ranges in cards
+    document.getElementById('tempOptimal').textContent =
+        `${cropInfo.temperature.min}-${cropInfo.temperature.max}°C`;
+    document.getElementById('moistureOptimal').textContent =
+        `${cropInfo.moisture.min}-${cropInfo.moisture.max}%`;
+    document.getElementById('phOptimal').textContent =
+        `${cropInfo.ph.min}-${cropInfo.ph.max}`;
+    document.getElementById('humidityOptimal').textContent =
+        `${cropInfo.humidity.min}-${cropInfo.humidity.max}%`;
+}
+
+// Modal handling
+function initializeModals() {
+
+// ---  Get all modal elements ---
+    const selectCropModal = document.getElementById('selectCropModal');
+    const addCropModal = document.getElementById('addCropModal');
+    const editDeleteCropModal = document.getElementById('editDeleteCropModal'); // **NEW**
+
+    // --- Get buttons that open modals ---
+    const selectCropBtn = document.getElementById('selectCropBtn');
+    const addCropBtn = document.getElementById('addCropBtn');
+    const deleteCropBtn = document.getElementById('deleteCropBtn'); // **NEW**
+
+    // ---  Get all close buttons ---
+    const closeButtons = document.querySelectorAll('.close-modal');
+
+    // ---  Open Modals ---
+    // Check if the elements exist before adding listeners
+    if (selectCropBtn && selectCropModal) {
+        selectCropBtn.addEventListener('click', () => {
+            renderCropOptions(); // **MODIFIED**: Render crops before opening
+            selectCropModal.style.display = 'flex';
+        });
+    }
+
+    if (addCropBtn && addCropModal) {
+        addCropBtn.addEventListener('click', () => {
+            addCropModal.style.display = 'flex';
+        });
+    }
+
+    // ---  Close Modals (with 'x' buttons) ---
+    closeButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            // Find the parent modal and hide it
+            event.target.closest('.modal').style.display = 'none';
+        });
+    });
+
+    // ---  Close Modals (by clicking outside) ---
+    window.addEventListener('click', (event) => {
+        if (event.target === selectCropModal) {
+            selectCropModal.style.display = 'none';
+        }
+        if (event.target === addCropModal) {
+            addCropModal.style.display = 'none';
+        }
+        if (event.target === editDeleteCropModal) { // **NEW**
+            editDeleteCropModal.style.display = 'none';
+        }
+    });
+
+    // --- Crop Selection Logic - Simplified, managed by renderCropOptions
+
+    // ---  Confirm Crop Selection Button ---
+    document.getElementById('confirmCropBtn').addEventListener('click', () => {
+        // Find the currently selected crop (which now includes custom ones)
+        const selectedOption = document.querySelector('#selectCropModal .crop-option.selected');
+        if (selectedOption) {
+            const selectedCropKey = selectedOption.getAttribute('data-crop');
+            setCrop(selectedCropKey, allCropData[selectedCropKey]);
+            selectCropModal.style.display = 'none'; // Hide modal
+            document.querySelectorAll('#selectCropModal .crop-option').forEach(o => o.classList.remove('selected')); // Clear selection
+        } else {
+            alert('Please select a crop');
+        }
+    });
+
+    // ---  Add Custom Crop Form ---
+    document.getElementById('addCropForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cropName = document.getElementById('customCropName').value;
+        const tempMin = parseFloat(document.getElementById('tempMin').value);
+        const tempMax = parseFloat(document.getElementById('tempMax').value);
+        const moistureMin = parseFloat(document.getElementById('moistureMin').value);
+        const moistureMax = parseFloat(document.getElementById('moistureMax').value);
+        const phMin = parseFloat(document.getElementById('phMin').value);
+        const phMax = parseFloat(document.getElementById('phMax').value);
+        const humidityMin = parseFloat(document.getElementById('humidityMin').value);
+        const humidityMax = parseFloat(document.getElementById('humidityMax').value);
+
+        // Create custom crop object
+        const customCrop = {
+            name: cropName,
+            temperature: { min: tempMin, max: tempMax },
+            moisture: { min: moistureMin, max: moistureMax },
+            ph: { min: phMin, max: phMax },
+            humidity: { min: humidityMin, max: humidityMax },
+            isCustom: true // Mark as custom
+        };
+
+        // **NEW LOGIC**: Generate a unique key and save the custom crop
+        const customKey = 'custom_' + Date.now();
+        
+        const customCropsJson = localStorage.getItem('customCrops');
+        let customCrops = customCropsJson ? JSON.parse(customCropsJson) : {};
+        customCrops[customKey] = customCrop;
+        
+        saveCustomCrops(customCrops); // Save back to localStorage and update allCropData
+
+        // Set the new custom crop as the selected one
+        setCrop(customKey, customCrop);
+
+        alert(`Custom crop "${cropName}" added and selected!`);
+        document.getElementById('addCropForm').reset();
+        addCropModal.style.display = 'none'; // Hide modal
+    });
+    
+    // --- **NEW** Edit Crop Form Submission ---
+    document.getElementById('editCropForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cropKey = document.getElementById('editCropKey').value;
+        const cropName = document.getElementById('editCustomCropName').value;
+        const tempMin = parseFloat(document.getElementById('editTempMin').value);
+        const tempMax = parseFloat(document.getElementById('editTempMax').value);
+        const moistureMin = parseFloat(document.getElementById('editMoistureMin').value);
+        const moistureMax = parseFloat(document.getElementById('editMoistureMax').value);
+        const phMin = parseFloat(document.getElementById('editPhMin').value);
+        const phMax = parseFloat(document.getElementById('editPhMax').value);
+        const humidityMin = parseFloat(document.getElementById('editHumidityMin').value);
+        const humidityMax = parseFloat(document.getElementById('editHumidityMax').value);
+
+        // Update the custom crop object
+        const updatedCrop = {
+            name: cropName,
+            temperature: { min: tempMin, max: tempMax },
+            moisture: { min: moistureMin, max: moistureMax },
+            ph: { min: phMin, max: phMax },
+            humidity: { min: humidityMin, max: humidityMax },
+            isCustom: true
+        };
+
+        const customCropsJson = localStorage.getItem('customCrops');
+        let customCrops = customCropsJson ? JSON.parse(customCropsJson) : {};
+        customCrops[cropKey] = updatedCrop;
+        
+        saveCustomCrops(customCrops);
+        
+        if (currentCropKey === cropKey) {
+            setCrop(cropKey, updatedCrop); // Re-set the crop to update the main UI
+        }
+        
+        alert(`Crop "${cropName}" updated successfully!`);
+        editDeleteCropModal.style.display = 'none';
+        renderCropOptions(); // Re-render the select crop modal
+    });
+
+    // --- **NEW** Delete Crop Button Handler ---
+    deleteCropBtn.addEventListener('click', () => {
+        const cropKey = document.getElementById('editCropKey').value;
+        const cropName = document.getElementById('editCustomCropName').value;
+        
+        if (confirm(`Are you sure you want to delete the custom crop "${cropName}"? This action cannot be undone.`)) {
+            const customCropsJson = localStorage.getItem('customCrops');
+            let customCrops = customCropsJson ? JSON.parse(customCropsJson) : {};
+            
+            delete customCrops[cropKey]; // Delete from the custom crops object
+            saveCustomCrops(customCrops); // Save updated list
+            
+            // If the deleted crop was currently selected, reset the selection
+            if (currentCropKey === cropKey) {
+                // Fallback to initial state
+                setCrop('none', {
+                    name: "No crop selected",
+                    temperature: { min: 0, max: 0 },
+                    moisture: { min: 0, max: 0 },
+                    ph: { min: 0, max: 0 },
+                    humidity: { min: 0, max: 0 },
+                });
+            }
+
+            alert(`Crop "${cropName}" deleted successfully.`);
+            editDeleteCropModal.style.display = 'none';
+            renderCropOptions(); // Re-render the select crop modal
+        }
+    });
+}
+
+// **NEW FUNCTION** to render all crop options in the modal
+function renderCropOptions() {
+    const cropGrid = document.querySelector('#selectCropModal .crop-grid');
+    cropGrid.innerHTML = ''; // Clear existing content
+
+    // Iterate over all crops (predefined and custom)
+    Object.entries(allCropData).forEach(([key, crop]) => {
+        // Skip the initial 'none' crop
+        if (key === 'none') return; 
+        
+        const isPredefined = !crop.isCustom;
+        const optionDiv = document.createElement('div');
+        optionDiv.className = `crop-option ${isPredefined ? '' : 'custom'}`;
+        optionDiv.setAttribute('data-crop', key);
+        
+        // Add selected class if this crop is currently active
+        if (currentCropKey === key) {
+            optionDiv.classList.add('selected');
+        }
+
+        let innerHTML = `
+            <i class="fas fa-seedling crop-icon-small"></i>
+            <div class="crop-name-small">${crop.name}</div>
+        `;
+        
+        // Add edit/delete button only for custom crops
+        if (!isPredefined) {
+            innerHTML += `
+                <div class="crop-actions">
+                    <button class="edit-btn" data-key="${key}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
+            `;
+        }
+        
+        optionDiv.innerHTML = innerHTML;
+        
+        // Event listener for selecting the crop
+        optionDiv.addEventListener('click', (e) => {
+             // If click target is not an edit/delete button, select the crop
+            if (!e.target.closest('.crop-actions button')) {
+                document.querySelectorAll('#selectCropModal .crop-option').forEach(o => o.classList.remove('selected'));
+                optionDiv.classList.add('selected');
+            }
+        });
+        
+        // Event listener for the Edit button
+        if (!isPredefined) {
+            const editBtn = optionDiv.querySelector('.edit-btn');
+            if (editBtn) {
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Stop click from propagating to the option div
+                    openEditDeleteModal(key);
+                });
+            }
+        }
+
+        cropGrid.appendChild(optionDiv);
+    });
+}
+
+// **NEW FUNCTION** to open the edit modal
+function openEditDeleteModal(cropKey) {
+    const crop = allCropData[cropKey];
+    const editDeleteCropModal = document.getElementById('editDeleteCropModal');
+    
+    if (!crop || !crop.isCustom) return; // Should only open for custom crops
+
+    // Set the hidden key
+    document.getElementById('editCropKey').value = cropKey;
+    
+    // Set modal title
+    document.getElementById('editDeleteCropTitle').textContent = `Edit Crop: ${crop.name}`;
+
+    // Populate form fields
+    document.getElementById('editCustomCropName').value = crop.name;
+    document.getElementById('editTempMin').value = crop.temperature.min;
+    document.getElementById('editTempMax').value = crop.temperature.max;
+    document.getElementById('editMoistureMin').value = crop.moisture.min;
+    document.getElementById('editMoistureMax').value = crop.moisture.max;
+    document.getElementById('editPhMin').value = crop.ph.min;
+    document.getElementById('editPhMax').value = crop.ph.max;
+    document.getElementById('editHumidityMin').value = crop.humidity.min;
+    document.getElementById('editHumidityMax').value = crop.humidity.max;
+
+    // Show the modal
+    editDeleteCropModal.style.display = 'flex';
+}
 
 function initializeTimeFilters() {
     const timeFilters = document.querySelectorAll('.time-filter');
@@ -250,41 +455,39 @@ function initializeExportButton() {
 
 function initializePumpControls() {
     const pumpSwitch = document.getElementById('pump-switch');
-    const pumpStatusElement = document.getElementById('pump-status');
+    const savedStatus = localStorage.getItem('pumpStatus');
+    const initialStatus = savedStatus === 'on' ? 'on' : 'off';
+    
+
+    setPumpStatus(initialStatus); 
+
 
     pumpSwitch.addEventListener('change', function () {
         setPumpStatus(this.checked ? 'on' : 'off');
     });
 
-    // Initialize switch state
-    pumpSwitch.checked = false;
 }
+
+
 function setPumpStatus(status) {
     const pumpSwitch = document.getElementById('pump-switch');
-    const pumpStatusElement = document.getElementById('pump-status');
+
+    // *** Save state to localStorage ***
+    localStorage.setItem('pumpStatus', status);
 
     if (status === 'on') {
         pumpSwitch.checked = true;
-        pumpStatusElement.innerHTML = 'Status: <span class="status-on">On</span>';
-        // Add visual feedback
-        document.querySelector('.action-card').style.borderColor = '#27ae60';
-        document.querySelector('.action-card').style.background = '#e8f5e9';
+        
     } else {
         pumpSwitch.checked = false;
-        pumpStatusElement.innerHTML = 'Status: <span class="status-off">Off</span>';
-        // Reset visual feedback
-        document.querySelector('.action-card').style.borderColor = '#e3f2fd';
-        document.querySelector('.action-card').style.background = 'white';
+      
     }
 
-    // Update last action time
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    document.querySelector('.action-card .last-updated').textContent =
-        `Last action: ${timeString}`;
-
     const message = status === 'on' ? 'Water pump turned ON' : 'Water pump turned OFF';
-    showNotification(message, status);
+    // Only show notification if the change came from an active element (user click)
+    if(document.activeElement === pumpSwitch) {
+        showNotification(message, status);
+    }
 }
 function showNotification(message, type) {
     // Create notification element
@@ -339,10 +542,7 @@ function loadInitialData() {
         }
     ];
     deviceIdCounter = 3;
-    renderDevices();
-
-    // Initialize pump to off state
-    setPumpStatus('off');
+    
 }
 
 function loadHistoryData(timeRange) {
@@ -536,8 +736,6 @@ function updateSoilMoistureStatus(moistureLevel) {
         message = 'Reduce irrigation';
         className = 'status-saturated';
     }
-        statusElement.textContent = `Soil Moisture: ${status}`;
-        statusElement.className = `soil-moisture-status ${statusClass}`;
 
     statusElement.textContent = `${status}: ${message}`;
     statusElement.className = `status-message ${className}`;

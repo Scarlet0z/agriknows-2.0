@@ -26,9 +26,7 @@
         </header>
 
         <div class="main-content">
-            <!------------------ Crop Management Section ------------------>
             <section class="crop-management">
-                <!--Crop Selector Section -->
                 <section class="crop-selector">
                     <div id="current-date"></div>
                     <div class="form-group">
@@ -50,7 +48,6 @@
                     </div>
                 </section>
 
-                <!--------------- Current Crop Info --------------->
                 <div class="current-crop">
                     <div class="crop-info">
                         <div class="crop-details">
@@ -66,15 +63,13 @@
 
             </section>
 
-            <!---------------- Select Crop Modal ------------------>
-
             <div class="modal" id="selectCropModal">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title">Select Crop</h3>
                         <button class="close-modal">&times;</button>
                     </div>
-                    <p>Choose a crop to set optimal environmental conditions:</p>
+                    <p>Choose a crop to set optimal environmental conditions. Custom crops can be edited.</p>
                     <div class="crop-grid">
                         <div class="crop-option" data-crop="corn">
                             <i class="fas fa-seedling crop-icon-small"></i>
@@ -103,7 +98,6 @@
                 </div>
             </div>
 
-            <!--------------- Add Custom Crop Modal --------------->
             <div class="modal" id="addCropModal">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -164,7 +158,66 @@
                 </div>
             </div>
 
-            <!------------------ Current Status ------------------>
+            <div class="modal" id="editDeleteCropModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="editDeleteCropTitle">Edit Crop: Crop Name</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <form id="editCropForm">
+                        <input type="hidden" id="editCropKey">
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomCropName">Crop Name</label>
+                            <input type="text" id="editCustomCropName" class="form-input" placeholder="Enter crop name"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Temperature Range (°C)</label>
+                            <div class="range-inputs">
+                                <input type="number" id="editTempMin" class="form-input range-input" placeholder="Min"
+                                    required>
+                                <input type="number" id="editTempMax" class="form-input range-input" placeholder="Max"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Soil Moisture Range (%)</label>
+                            <div class="range-inputs">
+                                <input type="number" id="editMoistureMin" class="form-input range-input" placeholder="Min"
+                                    required>
+                                <input type="number" id="editMoistureMax" class="form-input range-input" placeholder="Max"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">pH Range</label>
+                            <div class="range-inputs">
+                                <input type="number" step="0.1" id="editPhMin" class="form-input range-input"
+                                    placeholder="Min" required>
+                                <input type="number" step="0.1" id="editPhMax" class="form-input range-input"
+                                    placeholder="Max" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Humidity Range (%)</label>
+                            <div class="range-inputs">
+                                <input type="number" id="editHumidityMin" class="form-input range-input" placeholder="Min"
+                                    required>
+                                <input type="number" id="editHumidityMax" class="form-input range-input" placeholder="Max"
+                                    required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-confirm" style="width: 100%; margin-top: 10px;">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                    <button id="deleteCropBtn" class="btn-delete" style="width: 100%; margin-top: 10px;">
+                        <i class="fas fa-trash"></i> Delete Crop
+                    </button>
+                </div>
+            </div>
+
             <section class="current-status">
                 <h2><i class="fas fa-chart-line"></i> Current Status</h2>
                 <div class="current-status-grid">
@@ -222,7 +275,6 @@
                 </div>
             </section>
 
-            <!------------------ Data History Section ------------------>
             <section class="data-history">
                 <div class="history-header">
                     <h2><i class="fas fa-history"></i> Data History</h2>
@@ -258,8 +310,7 @@
                             </tr>
                         </thead>
                         <tbody id="history-data">
-                            <!-- Data will be populated by JavaScript -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
 

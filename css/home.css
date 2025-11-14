@@ -681,6 +681,9 @@ input:checked+.slider:before {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* To push buttons to the bottom */
 }
 
 .crop-option:hover {
@@ -711,6 +714,58 @@ input:checked+.slider:before {
 .range-input {
     flex: 1;
 }
+
+/* --- NEW STYLES FOR CUSTOM CROP ACTIONS --- */
+
+.crop-option.custom {
+    padding-bottom: 5px; /* Adjust padding for button area */
+}
+
+.crop-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.crop-actions button {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    width: 100%; /* For full width within the container */
+    margin: 0;
+}
+
+.crop-actions .edit-btn {
+    background-color: #f39c12; /* Orange for Edit */
+    color: white;
+}
+
+.crop-actions .edit-btn:hover {
+    background-color: #e67e22;
+}
+
+/* General Delete Button Style (for the modal) */
+.btn-delete {
+    background-color: #e74c3c; /* Red color for delete */
+    color: #fff;
+    height: 40px;
+    width: auto;
+    align-items: center;
+    text-align: center;
+    border: none;
+    border-radius: 9px;
+    padding: 0 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+
 
 footer {
     width: auto;
@@ -905,6 +960,14 @@ footer {
     button {
         font-size: 0.9rem;
         padding: 8px;
+    }
+
+    .crop-actions {
+        flex-direction: column;
+    }
+
+    .crop-actions button {
+        margin-top: 5px;
     }
 
     footer {
