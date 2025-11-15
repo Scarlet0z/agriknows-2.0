@@ -44,6 +44,7 @@ body {
   background: white;
   padding: 40px;
 }
+
 header{
   color: #1b5e20;
   font-weight: bold;
@@ -157,7 +158,39 @@ header{
 .container button:hover {
   background: #1b5e20;
 }
+/* 🔹 Google Authentication Button */
+.authenticationBTN {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
+.authenticationBTN button {
+  width: 200px;
+  height: 50px;
+  display: flex;
+  align-items: row;
+  margin: 20px;
+  justify-content: center;
+  padding: 13px 20px;
+  background-color: #ffffff;
+  color: #444;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.authenticationBTN button:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.authenticationBTN img {
+  height: 20px;
+  width: 20px;
+}
 .forgot-password {
   text-align: right;
   margin-top: -5px;
@@ -199,9 +232,9 @@ header{
   height: 50px;
   display: flex;
   align-items: row;
-  margin: 20px;
+  margin: 10px;
   justify-content: center;
-  padding: 13px 20px;
+  padding: 13px 10px;
   background-color: #ffffff;
   color: #444;
   border: 1px solid #ccc;
