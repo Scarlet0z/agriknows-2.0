@@ -77,12 +77,12 @@ submit.addEventListener("click", function (event) {
       const user = userCredential.user;
       alert("Creating Account...");
       window.location.href = "/index.html";
-      // ...
+      
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       alert(errorMessage);
-      // ..
+      
     });
 });
