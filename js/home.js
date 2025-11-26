@@ -27,12 +27,12 @@ const PREDEFINED_CROP_DATA = {
         ph: { min: 5.0, max: 6.5 },
         humidity: { min: 70, max: 85 },
     },
-    wheat: {
-        name: "Wheat",
-        temperature: { min: 10, max: 25 },
-        moisture: { min: 40, max: 60 },
-        ph: { min: 6.0, max: 7.5 },
-        humidity: { min: 40, max: 60 },
+    eggplant: {
+        name: "Eggplant",
+        temperature: { min: 20, max: 30 },
+        moisture: { min: 60, max: 80 },
+        ph: { min: 5.5, max: 6.8 },
+        humidity: { min: 50, max: 70 },
     },
     tomato: {
         name: "Tomato",
@@ -41,12 +41,12 @@ const PREDEFINED_CROP_DATA = {
         ph: { min: 5.5, max: 6.8 },
         humidity: { min: 65, max: 85 },
     },
-    lettuce: {
-        name: "Lettuce",
-        temperature: { min: 7, max: 20 },
-        moisture: { min: 70, max: 85 },
+    onion: {
+        name: "Onion",
+        temperature: { min: 15, max: 30 },
+        moisture: { min: 60, max: 80 },
         ph: { min: 6.0, max: 7.0 },
-        humidity: { min: 70, max: 80 },
+        humidity: { min: 50, max: 70 },
     }
 };
 
