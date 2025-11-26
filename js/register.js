@@ -2,6 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebas
 import {
   getAuth,
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
@@ -15,26 +17,50 @@ const firebaseConfig = {
 };
 
 
-//Show/Hide Password 
+// Show/Hide Password
 document.addEventListener('DOMContentLoaded', () => {
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 
-  if (togglePassword) { // Check if the element exists
-    togglePassword.addEventListener('click', function (e) {
-      // toggle the type attribute
+  if (togglePassword && password) {
+    togglePassword.addEventListener('click', () => {
+      // Toggle the type attribute
       const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
       password.setAttribute('type', type);
 
-      // toggle the eye icon
-      this.classList.toggle('fa-eye-slash');
+      // Toggle the icon
+      if (type === 'text') {
+        togglePassword.src = '/image/hide.png'; // password is visible, show "hide" icon
+      } else {
+        togglePassword.src = '/image/show.png'; // password is hidden, show "show" icon
+      }
     });
   }
 });
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+auth.languageCode = 'en' 
+const provider = new GoogleAuthProvider();
+
+const googleLogin = document.getElementById("google-login-btn");
+googleLogin.addEventListener("click", function(){
+  signInWithPopup(auth, provider)
+  .then((result) => {
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const user = result.user;
+    console.log(user);
+    window.location.href = "/index.html";
+
+  }).catch((error) => {
+
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+  });
+})
 
 //submit button /  signup button
 const submit = document.getElementById("submit");
@@ -42,6 +68,7 @@ submit.addEventListener("click", function (event) {
   event.preventDefault();
 
   //inputs
+  const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -51,12 +78,12 @@ submit.addEventListener("click", function (event) {
       const user = userCredential.user;
       alert("Creating Account...");
       window.location.href = "/index.html";
-      // ...
+      
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       alert(errorMessage);
-      // ..
+      
     });
 });

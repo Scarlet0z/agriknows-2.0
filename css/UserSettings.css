@@ -148,6 +148,57 @@ select {
   border-radius: 6px;
 }
 
+/* ... existing styles ... */
+
+/* Form */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+/* ... existing styles ... */
+
+input,
+select {
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  width: 100%; /* Ensure input takes full width of its container */
+}
+
+/* --- NEW STYLES FOR PASSWORD TOGGLE --- */
+
+/* Container for input and icon, makes positioning possible */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Adjust input padding to make room for the icon */
+.password-input-container input {
+    padding-right: 40px; /* Add space for the icon */
+}
+
+/* Styling for the eye icon */
+.password-toggle {
+  position: absolute;
+  right: 10px; /* Position from the right edge of the container */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #555; /* Neutral color for the icon */
+  user-select: none; /* Prevents text selection on the icon */
+}
+
+/* Optional: Better visual feedback when hovering over the toggle */
+.password-toggle:hover {
+    color: #4b6c2a; /* Use your brand color on hover */
+}
+
+/* ... rest of existing styles ... */
 
 /* Buttons */
 .btn {
