@@ -553,13 +553,13 @@ input:checked+.slider:before {
 
 .moisture-status {
     display: flex;
-    width: 20%;
+    width: auto;
     align-items: flex-end;
     justify-content: center;
     padding: 8px 15px;
     background-color: #98ce9b;
     border-radius: 20px;
-    height: 40px;
+    height: auto;
 }
 
 .soil-moisture-status {
