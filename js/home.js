@@ -43,12 +43,12 @@ const PREDEFINED_CROP_DATA = {
         ph: { min: 5.0, max: 6.5 },
         humidity: { min: 70, max: 85 },
     },
-    wheat: {
-        name: "Wheat",
-        temperature: { min: 10, max: 25 },
-        moisture: { min: 40, max: 60 },
-        ph: { min: 6.0, max: 7.5 },
-        humidity: { min: 40, max: 60 },
+    eggplant: {
+        name: "Eggplant",
+        temperature: { min: 20, max: 30 },
+        moisture: { min: 60, max: 80 },
+        ph: { min: 5.5, max: 6.8 },
+        humidity: { min: 50, max: 70 },
     },
     tomato: {
         name: "Tomato",
@@ -57,12 +57,12 @@ const PREDEFINED_CROP_DATA = {
         ph: { min: 5.5, max: 6.8 },
         humidity: { min: 65, max: 85 },
     },
-    lettuce: {
-        name: "Lettuce",
-        temperature: { min: 7, max: 20 },
-        moisture: { min: 70, max: 85 },
+    onion: {
+        name: "Onion",
+        temperature: { min: 15, max: 30 },
+        moisture: { min: 60, max: 80 },
         ph: { min: 6.0, max: 7.0 },
-        humidity: { min: 70, max: 80 },
+        humidity: { min: 50, max: 70 },
     }
 };
 
@@ -801,24 +801,24 @@ function updateSoilMoistureStatus(moistureLevel) {
     let status, message, className;
 
     if (moistureLevel < 20) {
-        status = 'Very Dry';
-        message = 'Irrigation needed immediately';
+        status = 'Sobrang tuyo';
+        message = 'Kailangan agad ng Patubig';
         className = 'status-dry';
     } else if (moistureLevel < 40) {
-        status = 'Dry';
-        message = 'Consider irrigation soon';
+        status = 'Tuyot';
+        message = 'Kailangan ng Patubig';
         className = 'status-moderate';
     } else if (moistureLevel < 60) {
-        status = 'Optimal';
-        message = 'Moisture level is perfect';
+        status = 'Mainam';
+        message = 'Perpektong kondition ng pag kabasa ng lupa';
         className = 'status-optimal';
     } else if (moistureLevel < 80) {
-        status = 'Wet';
-        message = 'Adequate moisture';
+        status = 'Basa';
+        message = 'Sapat na kahalumigmigan';
         className = 'status-wet';
     } else {
-        status = 'Saturated';
-        message = 'Reduce irrigation';
+        status = 'Sobra sa tubig';
+        message = 'Bawasan ang Tubig';
         className = 'status-saturated';
     }
 
