@@ -16,13 +16,12 @@ window.onunload=function(){null;}
 
 // Your web app's Firebase configuration 
 const firebaseConfig = {
-  apiKey: "AIzaSyCq4lH4tj4AS9-cqvM29um--Nu4v2UdvZw",
-  authDomain: "agriknows-data.firebaseapp.com",
-  databaseURL: "https://agriknows-data-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "agriknows-data",
-  storageBucket: "agriknows-data.firebasestorage.app",
-  messagingSenderId: "922008629713",
-  appId: "1:922008629713:web:5cf15ca9d47036b9a8f0f0"
+  apiKey: "AIzaSyDxTSnDc-z4wJ4fL9zf3kB3uuvZjcISNjQ",
+  authDomain: "login-agriknows.firebaseapp.com",
+  projectId: "login-agriknows",
+  storageBucket: "login-agriknows.firebasestorage.app",
+  messagingSenderId: "281355587751",
+  appId: "1:281355587751:web:fb479b62b5036b44b68b82",
 };
 
 // Initialize Firebase
@@ -48,18 +47,27 @@ let currentUser = null;
 // This checks if the user is logged in every time the page loads
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    currentUser = user; // Store the user object
+    // User is signed in, they can stay on this page.
     console.log("User is signed in:", user.uid);
-    
-    //Use displayName for Username
-    usernameInput.value = user.displayName || 'Set your username'; 
-    emailInput.value = user.email || 'N/A'; // Display email
-
   } else {
     // User is signed out. Redirect them to the login page.
     console.log("No user signed in. Redirecting...");
+    // Use replace() to prevent "back" button from working
     window.location.replace('/pages/login.html');
   }
+});
+
+// Add event listener to the logout button
+document.getElementById('logout-btn').addEventListener('click', () => {
+  signOut(auth).then(() => {
+    // Sign-out successful.
+    alert('You have been logged out successfully.');
+    // Redirect to the login page (based on your signup.html link)
+    window.location.replace = ('/pages/login.html'); 
+  }).catch((error) => {
+    // An error happened.
+    alert('Error logging out: ' + error.message);
+  });
 });
 
 // --- NEW PASSWORD TOGGLE LOGIC ---
