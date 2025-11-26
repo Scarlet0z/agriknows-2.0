@@ -327,7 +327,6 @@ header {
 
 /* The switch - the box around the slider */
 .switch {
-    margin-top: 7px;
     position: relative;
     display: inline-block;
     width: 60px;
@@ -424,9 +423,9 @@ input:checked+.slider:before {
 }
 
 .time-filter.active {
-    background: #77a748;
+    background:  #2e7d32;
     color: white;
-    border-color: #77a748;
+    border-color: #2e7d32;
 }
 
 .history-actions {
@@ -486,7 +485,7 @@ input:checked+.slider:before {
 }
 
 .history-table th {
-    background-color: #77a748;
+    background-color:  #2e7d32;
     color: white;
     font-weight: 600;
 }

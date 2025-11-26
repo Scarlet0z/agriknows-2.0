@@ -4,7 +4,8 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
@@ -41,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -64,6 +67,7 @@ googleLogin.addEventListener("click", function(){
   });
 })
 
+
 //submit button /  signup button
 const submit = document.getElementById("submit");
 submit.addEventListener("click", function (event) {
@@ -75,17 +79,26 @@ submit.addEventListener("click", function (event) {
   const password = document.getElementById("password").value;
 
   createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up
-      const user = userCredential.user;
-      alert("Creating Account...");
-      window.location.href = "/index.html";
-      
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert(errorMessage);
-      
+  .then(async (userCredential) => {
+    const user = userCredential.user;
+
+    // 1️⃣ Save username to Firebase Auth
+    await updateProfile(user, {
+      displayName: username
     });
+
+    // 2️⃣ Save user info to Realtime Database
+    const db = getDatabase();
+    await set(ref(db, "users/" + user.uid), {
+      username: username,
+      email: email
+    });
+
+    alert("Account Created Successfully!");
+    window.location.href = "/index.html";
+  })
+  .catch((error) => {
+    alert(error.message);
+  });
+
 });

@@ -10,9 +10,6 @@ import {
   updateProfile, 
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-function preventBack(){window.history.forward()};
-setTimeout("preventBack()",0);
-window.onunload=function(){null;}
 
 // Your web app's Firebase configuration 
 const firebaseConfig = {

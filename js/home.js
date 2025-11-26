@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCq4lH4tj4AS9-cqvM29um--Nu4v2UdvZw",
@@ -12,12 +13,16 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app =initializeApp (firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
-function preventBack() { window.history.forward() };
-setTimeout("preventBack()", 0);
-window.onunload = function () { null; }
+function preventBack() {
+    window.history.forward();
+}
+setTimeout(preventBack, 0); 
+window.onunload = function () {
+};
 
 let devices = [];
 let currentPumpStatus = 'off';
@@ -70,90 +75,132 @@ document.addEventListener('DOMContentLoaded', function () {
    initDashboard();
 });
 
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("User is logged in:", user.email);
+        // Continue loading the dashboard
+        initDashboard();
+    } else {
+        console.log("No user logged in");
+        // Redirect to login page
+        window.location.href = "/pages/login.html";
+    }
+});
 
 function initDashboard() {
     updateCurrentDate();
     loadAllCropData(); // **MODIFIED**: Load crop data (including custom) from storage
     initializeEventListeners();
-    loadInitialData();
+   // loadInitialData();
     updateSoilMoistureStatus(42);
     updateLightStatus(1); // Set initial status to Light (1)
     initializePumpControls(); // **MODIFIED**: Initializes pump state from storage
     listenToFirebaseData();
 }
-function listenToFirebaseData() {
-   
-    // Change 'Sensors' to whatever your main node name is in Firebase.
-    const dataRef = query(ref(db, 'sensorData'), limitToLast(20));
 
-    onValue(dataRef, (snapshot) => {
+function listenToFirebaseData() {
+    // IMPORTANT: Change 'Sensors' to your actual Firebase node name (e.g., 'readings', 'data')
+    const readingsRef = query(ref(db, 'sensorData'), limitToLast(20));
+
+    onValue(readingsRef, (snapshot) => {
         const data = snapshot.val();
-        const tableBody = document.getElementById('history-data');
         
         if (!data) {
-            tableBody.innerHTML = '<tr><td colspan="6">No data found in database...</td></tr>';
+            historyDataBody.innerHTML = '<tr><td colspan="6">Walang nakitang data sa database...</td></tr>';
             return;
         }
 
-        // Convert object of objects to array and reverse (newest first)
-        const parsedData = Object.keys(data).map(key => {
+        // Convert the Firebase object of objects into a sortable array (newest first)
+        const dataArray = Object.keys(data).map(key => {
             return {
                 id: key,
                 ...data[key]
             };
-        }).reverse();
+        }).reverse(); 
 
         // 1. Update the History Table
-        updateHistoryTable(parsedData);
+        updateHistoryTable(dataArray);
 
-        // 2. Update the "Current Status" cards with the very latest reading
-        if (parsedData.length > 0) {
-            updateCurrentStatusCards(parsedData[0]);
+        // 2. Update the "Kasalukiyang Status" cards with the latest reading
+        if (dataArray.length > 0) {
+            updateCurrentStatusCards(dataArray[0]);
         }
     });
+}
+/**
+ * Formats a Firebase timestamp or push ID into a readable time string.
+ * @param {*} rawTime 
+ * @returns {string} Formatted time string
+ */
+function formatTimestamp(rawTime) {
+    if (!rawTime) return 'N/A';
+    
+    let date;
+    // Check if it's a timestamp string (like "2025-11-26 19:40:51")
+    if (typeof rawTime === 'string' && rawTime.includes('-')) {
+        date = new Date(rawTime.replace(/-/g, "/")); // Replace hyphens for better browser compatibility
+    } 
+    // If it's a Firebase push ID or a standard timestamp
+    else if (typeof rawTime === 'string') {
+        // We can't reliably get time from a push ID without parsing the first 8 bytes.
+        // For simplicity, we'll try to treat it as a timestamp if it's long enough.
+        // If it's a true timestamp (like ms since epoch), this works.
+        const timestampMs = rawTime.length === 20 ? new Date().getTime() : parseInt(rawTime);
+        date = new Date(timestampMs);
+    } else {
+        date = new Date(rawTime);
+    }
+    
+    // Check if date parsing was successful
+    if (isNaN(date)) {
+        return rawTime.substring(0, 10) + '...'; // Fallback if parsing fails
+    }
+
+    // Format as "HH:MM:SS AM/PM"
+    const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+    return date.toLocaleTimeString('en-US', timeOptions);
 }
 
 function updateHistoryTable(dataArray) {
     const tableBody = document.getElementById('history-data');
-    tableBody.innerHTML = ''; // Clear existing rows
+    if (!tableBody) return;
+    tableBody.innerHTML = ''; // Clear previous data
 
     dataArray.forEach(data => {
-        // Handle timestamp formatting (Assumes 'timestamp' exists in DB, or uses ID if it's a timestamp)
-        // If your DB has a specific "time" field, use data.time
-        let timeString = "N/A";
-        if(data.timestamp) {
-            timeString = new Date(data.timestamp).toLocaleTimeString();
-        } else if (data.time) {
-            timeString = data.time;
-        }
+        // Use the Firebase key (which is often a timestamp) or a specific timestamp field
+        const rawTime = data.timestamp || data.id; // Assuming Firebase key or 'timestamp' field
+        let timeString = formatTimestamp(rawTime);
 
         const row = document.createElement('tr');
         
-        // SAFEGUARDS: using || 'N/A' prevents crashes if a field is missing in DB
+        // IMPORTANT: Use the correct field names from your Firebase structure.
+        // I'm using common names like 'moisture', 'humidity', etc. Adjust if needed.
         row.innerHTML = `
-            <td>${timeString}</td>
-            <td>${data.soilMoisture || data.moisture || 0}%</td>
-            <td>${data.humidity || 0}%</td>
-            <td>${data.temperature || 0}°C</td>
-            <td>${data.lightLevel || (data.light === 1 ? 'Light' : 'Dark')}</td>
-            <td>${data.phLevel || data.ph || 0} pH</td>
+            <td>${timestamp}</td>
+            <td>${data.moisture || data.soilMoisture || so}%</td>
+            <td>${data.humidity || humidity}%</td>
+            <td>${data.temperature || temparature}°C</td>
+            <td>${data.light || light}</td>
+            <td>${data.ph || pH} pH</td>
         `;
         tableBody.appendChild(row);
     });
 }
 
+// --- NEW: Function to update the top cards with the latest reading ---
 function updateCurrentStatusCards(latestData) {
-    // Updates the big cards at the top of the screen
-    document.querySelector('.reading-card .temperature + .value').textContent = `${latestData.temperature || 0} °C`;
-    document.querySelector('.reading-card .moisture + .value').textContent = `${latestData.soilMoisture || latestData.moisture || 0} %`;
-    document.querySelector('.reading-card .ph + .value').textContent = `${latestData.phLevel || latestData.ph || 0} pH`;
-    document.querySelector('.reading-card .humidity + .value').textContent = `${latestData.humidity || 0}%`;
+    document.querySelector('.reading-card .temperature + .value').textContent = `${latestData.temperature || 'N/A'} °C`;
+    document.querySelector('.reading-card .moisture + .value').textContent = `${latestData.moisture || latestData.soilMoisture || 'N/A'} %`;
+    document.querySelector('.reading-card .ph + .value').textContent = `${latestData.ph || latestData.phLevel || 'N/A'} pH`;
+    document.querySelector('.reading-card .humidity + .value').textContent = `${latestData.humidity || 'N/A'}%`;
     
     // Update Soil Moisture Status Text
-    updateSoilMoistureStatus(latestData.soilMoisture || latestData.moisture || 0);
+    updateSoilMoistureStatus(latestData.moisture || latestData.soilMoisture || 0);
     
-    // Update Light Status
-    const lightVal = latestData.lightLevel === 'Light' || latestData.light === 1 ? 1 : 0;
+    // Update Light Status (Assuming 1 is Light, 0 is Dark)
+    const lightVal = latestData.light === 1 || latestData.light === 'Light' ? 1 : 0;
     updateLightStatus(lightVal);
 }
 
@@ -518,7 +565,7 @@ function initializeTimeFilters() {
             timeFilters.forEach(f => f.classList.remove('active'));
             filter.classList.add('active');
             const timeRange = filter.getAttribute('data-time');
-            loadHistoryData(timeRange);
+           // loadHistoryData(timeRange);
         });
     });
 }
