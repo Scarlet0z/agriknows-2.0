@@ -1,3 +1,20 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCq4lH4tj4AS9-cqvM29um--Nu4v2UdvZw",
+  authDomain: "agriknows-data.firebaseapp.com",
+  databaseURL: "https://agriknows-data-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "agriknows-data",
+  storageBucket: "agriknows-data.firebasestorage.app",
+  messagingSenderId: "922008629713",
+  appId: "1:922008629713:web:5cf15ca9d47036b9a8f0f0"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 function preventBack() { window.history.forward() };
 setTimeout("preventBack()", 0);
 window.onunload = function () { null; }
@@ -5,7 +22,6 @@ window.onunload = function () { null; }
 let devices = [];
 let currentPumpStatus = 'off';
 let deviceIdCounter = 1;
-
 // **NEW**: Global object to hold all crop data (predefined + custom)
 let allCropData = {};
 // **NEW**: Variable to track the currently selected crop key
@@ -54,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeApp();
 });
 
+
 function initializeApp() {
     updateCurrentDate();
     loadAllCropData(); // **MODIFIED**: Load crop data (including custom) from storage
@@ -62,7 +79,84 @@ function initializeApp() {
     updateSoilMoistureStatus(42);
     updateLightStatus(1); // Set initial status to Light (1)
     initializePumpControls(); // **MODIFIED**: Initializes pump state from storage
+    listenToFirebaseData();
 }
+function listenToFirebaseData() {
+   
+    // Change 'Sensors' to whatever your main node name is in Firebase.
+    const dataRef = query(ref(db, 'sensorData'), limitToLast(20));
+
+    onValue(dataRef, (snapshot) => {
+        const data = snapshot.val();
+        const tableBody = document.getElementById('history-data');
+        
+        if (!data) {
+            tableBody.innerHTML = '<tr><td colspan="6">No data found in database...</td></tr>';
+            return;
+        }
+
+        // Convert object of objects to array and reverse (newest first)
+        const parsedData = Object.keys(data).map(key => {
+            return {
+                id: key,
+                ...data[key]
+            };
+        }).reverse();
+
+        // 1. Update the History Table
+        updateHistoryTable(parsedData);
+
+        // 2. Update the "Current Status" cards with the very latest reading
+        if (parsedData.length > 0) {
+            updateCurrentStatusCards(parsedData[0]);
+        }
+    });
+}
+
+function updateHistoryTable(dataArray) {
+    const tableBody = document.getElementById('history-data');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    dataArray.forEach(data => {
+        // Handle timestamp formatting (Assumes 'timestamp' exists in DB, or uses ID if it's a timestamp)
+        // If your DB has a specific "time" field, use data.time
+        let timeString = "N/A";
+        if(data.timestamp) {
+            timeString = new Date(data.timestamp).toLocaleTimeString();
+        } else if (data.time) {
+            timeString = data.time;
+        }
+
+        const row = document.createElement('tr');
+        
+        // SAFEGUARDS: using || 'N/A' prevents crashes if a field is missing in DB
+        row.innerHTML = `
+            <td>${timeString}</td>
+            <td>${data.soilMoisture || data.moisture || 0}%</td>
+            <td>${data.humidity || 0}%</td>
+            <td>${data.temperature || 0}°C</td>
+            <td>${data.lightLevel || (data.light === 1 ? 'Light' : 'Dark')}</td>
+            <td>${data.phLevel || data.ph || 0} pH</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function updateCurrentStatusCards(latestData) {
+    // Updates the big cards at the top of the screen
+    document.querySelector('.reading-card .temperature + .value').textContent = `${latestData.temperature || 0} °C`;
+    document.querySelector('.reading-card .moisture + .value').textContent = `${latestData.soilMoisture || latestData.moisture || 0} %`;
+    document.querySelector('.reading-card .ph + .value').textContent = `${latestData.phLevel || latestData.ph || 0} pH`;
+    document.querySelector('.reading-card .humidity + .value').textContent = `${latestData.humidity || 0}%`;
+    
+    // Update Soil Moisture Status Text
+    updateSoilMoistureStatus(latestData.soilMoisture || latestData.moisture || 0);
+    
+    // Update Light Status
+    const lightVal = latestData.lightLevel === 'Light' || latestData.light === 1 ? 1 : 0;
+    updateLightStatus(lightVal);
+}
+
 function updateLightStatus(status) {
     const lightValueElement = document.getElementById('lightValue');
     const lightOptimalElement = document.getElementById('lightOptimal');
@@ -87,12 +181,7 @@ function updateCurrentDate() {
         now.toLocaleDateString('en-US', options);
 }
 
-function initializeEventListeners() {
-    initializeModals();
-    initializeTimeFilters();
-    initializeGraphMode();
-    initializeExportButton();
-}
+
 
 // **NEW FUNCTION** to load custom crops from localStorage
 function loadAllCropData() {
@@ -130,14 +219,12 @@ function saveCustomCrops(customCrops) {
 function setCrop(cropKey, cropInfo) {
     currentCropKey = cropKey;
     localStorage.setItem('selectedCropKey', cropKey); // Save the selected crop key for persistence
-
     // Update crop display
     document.getElementById('currentCropName').textContent = cropInfo.name;
     document.getElementById('currentCropOptimal').textContent =
         `Optimal: Temp ${cropInfo.temperature.min}-${cropInfo.temperature.max}°C, ` +
         `Moisture ${cropInfo.moisture.min}-${cropInfo.moisture.max}%, ` +
         `pH ${cropInfo.ph.min}-${cropInfo.ph.max}`;
-
     // Update optimal ranges in cards
     document.getElementById('tempOptimal').textContent =
         `${cropInfo.temperature.min}-${cropInfo.temperature.max}°C`;
@@ -147,6 +234,13 @@ function setCrop(cropKey, cropInfo) {
         `${cropInfo.ph.min}-${cropInfo.ph.max}`;
     document.getElementById('humidityOptimal').textContent =
         `${cropInfo.humidity.min}-${cropInfo.humidity.max}%`;
+}
+
+function initializeEventListeners() {
+    initializeModals();
+    initializeTimeFilters();
+    initializeGraphMode();
+    initializeExportButton();
 }
 
 // Modal handling
@@ -471,16 +565,12 @@ function initializePumpControls() {
 
 function setPumpStatus(status) {
     const pumpSwitch = document.getElementById('pump-switch');
-
     // *** Save state to localStorage ***
     localStorage.setItem('pumpStatus', status);
-
     if (status === 'on') {
         pumpSwitch.checked = true;
-        
     } else {
         pumpSwitch.checked = false;
-      
     }
 
     const message = status === 'on' ? 'Water pump turned ON' : 'Water pump turned OFF';
@@ -514,15 +604,14 @@ function showNotification(message, type) {
         gap: 8px;
     `;
     document.body.appendChild(notification);
-
-    // Remove notification after 3 seconds
+    // Remove notification after 2 seconds
     setTimeout(() => {
         notification.remove();
-    }, 3000);
+    }, 2000);
 }
 
 // Also update the loadInitialData function to initialize pump correctly:
-function loadInitialData() {
+/*function loadInitialData() {
     loadHistoryData('1h');
     // Load sample devices
     devices = [
@@ -543,8 +632,8 @@ function loadInitialData() {
     ];
     deviceIdCounter = 3;
     
-}
-
+}*/
+/*
 function loadHistoryData(timeRange) {
     const sampleData = [
         {
@@ -588,23 +677,9 @@ function loadHistoryData(timeRange) {
             phLevel: '6.8 pH'
         }
     ];
+*/
 
-    const tableBody = document.getElementById('history-data');
-    tableBody.innerHTML = ''; // Clear previous data
 
-    sampleData.forEach(data => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${data.time}</td>
-            <td>${data.soilMoisture}</td>
-            <td>${data.humidity}</td>
-            <td>${data.temperature}</td>
-            <td>${data.lightLevel}</td>
-            <td>${data.phLevel}</td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
 
 function initializeCharts() {
     // Initialize smaller bar charts for each parameter
@@ -613,8 +688,18 @@ function initializeCharts() {
     initializeBarChart('temperature-chart', 'Temperature', [22.1, 21.8, 21.5, 22.3, 22.0], '#e74c3c');
     initializeBarChart('ph-level-chart', 'pH Level', [6.7, 6.8, 6.7, 6.9, 6.8], '#9b59b6');
 }
-
 function initializeBarChart(canvasId, label, data, color) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['1', '2', '3', '4', '5'],
+            datasets: [{ label: label, data: data, backgroundColor: color + '80', borderColor: color, borderWidth: 1, borderRadius: 4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false }, x: { display: false } } }
+    });
+}
+/*function initializeBarChart(canvasId, label, data, color) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     new Chart(ctx, {
         type: 'bar',
@@ -681,7 +766,7 @@ function initializeBarChart(canvasId, label, data, color) {
             }
         }
     });
-}
+}*/
 function exportData() {
     // Create CSV content
     let csvContent = "Time,Device,Soil Moisture,Humidity,Temperature,Light Level,pH Level\n";
