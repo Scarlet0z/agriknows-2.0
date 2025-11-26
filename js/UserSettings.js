@@ -77,7 +77,6 @@ passwordToggles.forEach(toggle => {
         }
     });
 });
-// --- END NEW PASSWORD TOGGLE LOGIC ---
 
 
 // --- USERNAME/EMAIL UPDATE LOGIC (No Change) ---

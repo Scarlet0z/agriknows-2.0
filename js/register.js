@@ -17,22 +17,23 @@ const firebaseConfig = {
 };
 
 
-//show pass
+// Show/Hide Password
 document.addEventListener('DOMContentLoaded', () => {
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 
   if (togglePassword && password) {
-    togglePassword.addEventListener('click', (e) => {
-      const isPasswordHidden = password.getAttribute('type') === 'password';
+    togglePassword.addEventListener('click', () => {
+      // Toggle the type attribute
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
 
-      // Toggle password visibility
-      password.setAttribute('type', isPasswordHidden ? 'text' : 'password');
-
-      // Toggle the icon image
-      togglePassword.src = isPasswordHidden 
-        ? '/image/hide.png'
-        : '/image/show.png';
+      // Toggle the icon
+      if (type === 'text') {
+        togglePassword.src = '/image/hide.png'; // password is visible, show "hide" icon
+      } else {
+        togglePassword.src = '/image/show.png'; // password is hidden, show "show" icon
+      }
     });
   }
 });

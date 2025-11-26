@@ -13,16 +13,7 @@
 </head>
 
 <body>
-    <div id="google_translate_element"></div>
 
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'tl', //Tagalog
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-        }
     </script>
     <script type="text/javascript"
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -48,14 +39,13 @@
                     <div class="form-group">
                         <h2><i class="fas fa-seedling"></i> Crop Management</h2>
                         <div class="crop-controls">
-                            <button class="select-crop" id="selectCropBtn"><i class="fas fa-seedling"></i> Select
-                                Crop</button>
-                            <button class="select-crop" id="addCropBtn"><i class="fas fa-plus-circle"></i> Add Custom
-                                Crop</button>
+                            <button class="select-crop" id="selectCropBtn"><i class="fas fa-seedling"></i> Pumili ng
+                                Pananim</button>
+                            <button class="select-crop" id="addCropBtn"><i class="fas fa-plus-circle"></i> Mag Dagdag ng Pananim</button>
 
                             <div class="pump-control">
                                 <label for="pump-switch"><i
-                                        class="fas fa-faucet reading-icon pump"></i>Irrigation</label>
+                                        class="fas fa-faucet reading-icon pump"></i>Patubig</label>
                                 <label class="switch"><input type="checkbox" id="pump-switch"><span
                                         class="slider round"></span></label>
                             </div>
@@ -67,12 +57,12 @@
                 <div class="current-crop">
                     <div class="crop-info">
                         <div class="crop-details">
-                            <h3 id="currentCropName"><i class="fas fa-seedling"></i> No crop selected</h3>
-                            <p id="currentCropOptimal">Select a crop to see optimal conditions</p>
+                            <h3 id="currentCropName"><i class="fas fa-seedling"></i>Walang naka piling crop</h3>
+                            <p id="currentCropOptimal">Pumili ng crop Para bantayan</p>
                         </div>
                         <div class="moisture-status" id="soil-moisture-status">
-                            <p>Soil Moisture:
-                                <b>Optimal</b>
+                            <p>Pakabasa ng lupa:
+                                <b>pinakamainam</b>
                             </p>
                         </div>
                     </div>
@@ -82,10 +72,10 @@
             <div class="modal" id="selectCropModal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title">Select Crop</h3>
+                        <h3 class="modal-title">Pag-pili ng Pananim</h3>
                         <button class="close-modal">&times;</button>
                     </div>
-                    <p>Choose a crop to set optimal environmental conditions. Custom crops can be edited.</p>
+                    <p> Pumili ng isang pananim upang itakda ang pinakamainam na kondisyon. Maaaring i-edit ang mga pasadyang pananim.</p>
                     <div class="crop-grid">
                         <div class="crop-option" data-crop="corn">
                             <i class="fas fa-seedling crop-icon-small"></i>
@@ -97,7 +87,7 @@
                         </div>
                         <div class="crop-option" data-crop="wheat">
                             <i class="fas fa-seedling crop-icon-small"></i>
-                            <div class="crop-name-small">Wheat</div>
+                            <div class="crop-name-small">Eggplant</div>
                         </div>
                         <div class="crop-option" data-crop="tomato">
                             <i class="fas fa-seedling crop-icon-small"></i>
@@ -109,7 +99,7 @@
                         </div>
                     </div>
                     <button id="confirmCropBtn" class="btn-confirm" style="width: 100%; margin-top: 20px;">
-                        <i class="fas fa-check"></i> Confirm Selection
+                        <i class="fas fa-check"></i>Kumpirmahin
                     </button>
                 </div>
             </div>
@@ -117,17 +107,17 @@
             <div class="modal" id="addCropModal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title">Add Custom Crop</h3>
+                        <h3 class="modal-title">Mag Dagdag ng Custom Crop</h3>
                         <button class="close-modal">&times;</button>
                     </div>
                     <form id="addCropForm">
                         <div class="form-group">
-                            <label class="form-label" for="customCropName">Crop Name</label>
+                            <label class="form-label" for="customCropName">Pangalan ng Pananim</label>
                             <input type="text" id="customCropName" class="form-input" placeholder="Enter crop name"
                                 required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Temperature Range
+                            <label class="form-label">Saklaw ng Temperatura
                                 (°C)</label>
                             <div class="range-inputs">
                                 <input type="number" id="tempMin" class="form-input range-input" placeholder="Min"
@@ -137,7 +127,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Soil Moisture Range
+                            <label class="form-label">Saklaw ng pag kabasa ng lupa
                                 (%)</label>
                             <div class="range-inputs">
                                 <input type="number" id="moistureMin" class="form-input range-input" placeholder="Min"
@@ -147,7 +137,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">pH Range</label>
+                            <label class="form-label">Saklaw ng pH</label>
                             <div class="range-inputs">
                                 <input type="number" step="0.1" id="phMin" class="form-input range-input"
                                     placeholder="Min" required>
@@ -156,7 +146,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Humidity Range
+                            <label class="form-label">Saklaw ng Halumigmig
                                 (%)</label>
                             <div class="range-inputs">
                                 <input type="number" id="humidityMin" class="form-input range-input" placeholder="Min"
@@ -167,8 +157,7 @@
                         </div>
 
                         <button type="submit" class="btn-add" style="width: 100%; margin-top: 10px;">
-                            <i class="fas fa-plus-circle"></i> Add Custom
-                            Crop
+                            <i class="fas fa-plus-circle"></i>kumpirmahin
                         </button>
                     </form>
                 </div>
@@ -177,18 +166,18 @@
             <div class="modal" id="editDeleteCropModal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title" id="editDeleteCropTitle">Edit Crop: Crop Name</h3>
+                        <h3 class="modal-title" id="editDeleteCropTitle">Edit Crop: Pangalan ng Pananim</h3>
                         <button class="close-modal">&times;</button>
                     </div>
                     <form id="editCropForm">
                         <input type="hidden" id="editCropKey">
                         <div class="form-group">
-                            <label class="form-label" for="editCustomCropName">Crop Name</label>
+                            <label class="form-label" for="editCustomCropName">Pangalan ng Pananim</label>
                             <input type="text" id="editCustomCropName" class="form-input" placeholder="Enter crop name"
                                 required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Temperature Range (°C)</label>
+                            <label class="form-label">Saklaw ng Temperatura</label>
                             <div class="range-inputs">
                                 <input type="number" id="editTempMin" class="form-input range-input" placeholder="Min"
                                     required>
@@ -197,7 +186,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Soil Moisture Range (%)</label>
+                            <label class="form-label">Saklaw ng Pag kabasa ng luba</label>
                             <div class="range-inputs">
                                 <input type="number" id="editMoistureMin" class="form-input range-input"
                                     placeholder="Min" required>
@@ -206,7 +195,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">pH Range</label>
+                            <label class="form-label">Saklaw ng pH</label>
                             <div class="range-inputs">
                                 <input type="number" step="0.1" id="editPhMin" class="form-input range-input"
                                     placeholder="Min" required>
@@ -215,7 +204,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Humidity Range (%)</label>
+                            <label class="form-label">Saklaw ng Halumigmig</label>
                             <div class="range-inputs">
                                 <input type="number" id="editHumidityMin" class="form-input range-input"
                                     placeholder="Min" required>
@@ -229,29 +218,29 @@
                         </button>
                     </form>
                     <button id="deleteCropBtn" class="btn-delete" style="width: 100%; margin-top: 10px;">
-                        <i class="fas fa-trash"></i> Delete Crop
+                        <i class="fas fa-trash"></i> Bukarin
                     </button>
                 </div>
             </div>
 
             <section class="current-status">
-                <h2><i class="fas fa-chart-line"></i> Current Status</h2>
+                <h2><i class="fas fa-chart-line"></i> Kasalukiyang Status</h2>
                 <div class="current-status-grid">
 
                     <div class="reading-card">
                         <div class="reading-header">
                             <i class="fas fa-thermometer-half reading-icon temperature"></i>
-                            <h3>Temperature</h3>
+                            <h3>Temperatura</h3>
                         </div>
-                        <div class="value">23.5 °C</div>
+                        <div class="value">31.1 °C</div>
                         <div class="optimal" id="tempOptimal">Optimal: 20-25°C</div>
-                        <div class="last-updated">Last updated: 2 min ago</div>
+                        <div class="last-updated">Last updated: 1 min ago</div>
                     </div>
 
                     <div class="reading-card">
                         <div class="reading-header">
                             <i class="fas fa-tint reading-icon moisture"></i>
-                            <h3>Soil Moisture</h3>
+                            <h3>Pag Kabasa ng Lupa</h3>
                         </div>
                         <div class="value">42 %</div>
                         <div class="optimal" id="moistureOptimal">Optimal: 40-60%</div>
@@ -261,9 +250,9 @@
                     <div class="reading-card">
                         <div class="reading-header">
                             <i class="fas fa-flask reading-icon ph"></i>
-                            <h3>pH Level</h3>
+                            <h3>Antas ng pH</h3>
                         </div>
-                        <div class="value">6.8 pH</div>
+                        <div class="value">6.7 pH</div>
                         <div class="optimal" id="phOptimal">Optimal: 6.5-7.0</div>
                         <div class="last-updated">Last updated: 30 min ago</div>
                     </div>
@@ -271,11 +260,11 @@
                     <div class="reading-card">
                         <div class="reading-header">
                             <i class="fas fa-cloud reading-icon humidity"></i>
-                            <h3>Humidity</h3>
+                            <h3>Halumigmig</h3>
                         </div>
-                        <div class="value">65 %</div>
+                        <div class="value">68%</div>
                         <div class="optimal" id="humidityOptimal">Optimal: 60-70%</div>
-                        <div class="last-updated">Last updated: 5 min ago</div>
+                        <div class="last-updated">Last updated: 1 min ago</div>
                     </div>
 
                     <div class="reading-card">
@@ -283,7 +272,7 @@
                             <i class="fas fa-sun reading-icon light"></i>
                             <h3>Light Status</h3>
                         </div>
-                        <div class="value" id="lightValue">Light</div>
+                        <div class="value" id="lightValue">Dark</div>
                         <div class="optimal" id="lightOptimal"> </div>
                         <div class="last-updated">Last updated: 1 min ago</div>
                     </div>
@@ -317,12 +306,12 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Time</th>
-                                <th>Soil Moisture</th>
-                                <th>Humidity</th>
-                                <th>Temperature</th>
+                                <th>Oras</th>
+                                <th>Pag kabasa ng Lupa</th>
+                                <th>Halumigmig</th>
+                                <th>Temperatura</th>
                                 <th>Light Status</th>
-                                <th>pH Level</th>
+                                <th>Antas ng pH</th>
                             </tr>
                         </thead>
                         <tbody id="history-data">

@@ -98,8 +98,10 @@ header{
 }
 
 .password-field img {
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  margin-top: 9px;
+  margin-top: 5px;
   right: 15px;
   top: 50%;
   transform: translateY(-50%);
