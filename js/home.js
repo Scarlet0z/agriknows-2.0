@@ -67,11 +67,11 @@ const PREDEFINED_CROP_DATA = {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-    initializeApp();
+   initDashboard();
 });
 
 
-function initializeApp() {
+function initDashboard() {
     updateCurrentDate();
     loadAllCropData(); // **MODIFIED**: Load crop data (including custom) from storage
     initializeEventListeners();
