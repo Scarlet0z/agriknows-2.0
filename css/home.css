@@ -244,29 +244,62 @@ header {
 /*---------------- Current Status ----------------*/
 /* Add to home.css */
 
+.readings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.reading-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.reading-card:hover {
+    transform: translateY(-5px);
+}
+
+.reading-card .icon {
+    font-size: 2rem;
+    color: #4b6c2a;
+    margin-bottom: 10px;
+}
+
+.value-container {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0;
+}
+
+.status-text {
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+/* Status Colors */
 .status-good {
-    background-color: #c6f6d5; /* Green background */
-    color: #276749;            /* Dark green text */
+    background-color: #d4edda;
+    color: #155724;
 }
 
 .status-warning {
-    background-color: #feebcb; /* Orange background */
-    color: #c05621;            /* Dark orange text */
+    background-color: #fff3cd;
+    color: #856404;
 }
 
 .status-danger {
-    background-color: #fed7d7; /* Red background */
-    color: #c53030;            /* Dark red text */
+    background-color: #f8d7da;
+    color: #721c24;
 }
-
-/* Ensure the status message text is centered and spaced correctly */
-.status-message {
-    margin: 5px 0;
-    text-align: center;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-/*end of added*/
+/* n*/
 .current-status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -571,26 +604,20 @@ input:checked + .slider:before {
 }
 
 /* Sticky Header */
-/*------History Table-------*/
-/* ... existing styles ... */
-
-/* Sticky Header */
 .history-table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #2e7d32; /* Changed color to match new green */
-    z-index: 2;
-    text-align: center; /* Added center alignment for header */
+  position: sticky;
+  top: 0;
+  background-color: #2e7d32;
+  z-index: 2;
+  text-align: center;
 }
 
 /* ORAS column fix */
 .history-table th:first-child,
 .history-table td:first-child {
+    width: 220px;
+    min-width: 220px;
     white-space: nowrap;
-    /* Set a specific minimum width to ensure the full timestamp is visible */
-    min-width: 140px; 
-    /* Also ensure max-width is not limited, though min-width usually handles this */
-    width: 200px; 
 }
 
 /* Table Cells */

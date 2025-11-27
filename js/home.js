@@ -12,48 +12,12 @@ const firebaseConfig = {
   appId: "1:922008629713:web:5cf15ca9d47036b9a8f0f0"
 };
 
-//------------Notification--------------
-
-function showPopup(message) {
-    const popup = document.getElementById("popup");
-    const overlay = document.getElementById("overlay");
-    const popupText = document.getElementById("popup-text");
-
-    popupText.innerHTML = message;
-    
-    popup.classList.remove("hidden");
-    overlay.classList.remove("hidden");
-}
-
-document.getElementById("popup-btn").addEventListener("click", () => {
-    document.getElementById("popup").classList.add("hidden");
-    document.getElementById("overlay").classList.add("hidden");
-});
-
-let soilMoisture = 18;   // from sensor or Firebase
-let threshold = 20;
-
-if (soilMoisture < threshold) {
-    showPopup(`
-        Ang Pag kabasa ng iyong lupa ay bumaba na sa 
-        <b>${soilMoisture}%</b>. 
-        Ang iyong pananim ay maaaring matuyo.
-    `);
-}
-
-if (soilMoisture > 80) {
-    showPopup(`
-        Ang Pag kabasa ng lupa ay masyadong mataas: 
-        <b>${soilMoisture}%</b>.  
-        Iwasan ang overwatering.
-    `);
-}
+//-------------------------------------Firebase Initialization--------------------
 
 // Initialize Firebase
 const app =initializeApp (firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
-
 
 
 function preventBack() {
@@ -62,7 +26,7 @@ function preventBack() {
 setTimeout(preventBack, 0); 
 window.onunload = function () {
 };
-
+//-------------------------------------Global Variables let---------------------------
 let devices = [];
 let currentPumpStatus = 'off';
 let deviceIdCounter = 1;
@@ -70,6 +34,8 @@ let deviceIdCounter = 1;
 let allCropData = {};
 // **NEW**: Variable to track the currently selected crop key
 let currentCropKey = null;
+let latestHistoryData = []; // Store data for graphs
+let chartInstances = {};    // Store Chart.js instances to manage updates
 
 // Crop data with optimal environmental conditions (Predefined part)
 const PREDEFINED_CROP_DATA = {
@@ -115,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         // User is signed in, so we can now safely call the function
@@ -128,6 +93,56 @@ onAuthStateChanged(auth, (user) => {
         // You can leave this out if your login page handles the unauthenticated state.
     }
 });
+
+// ---- CHECK SENSOR VALUES AGAINST CROP THRESHOLD ----
+function checkThresholdAndNotify(sensorData) {
+    if (!currentCropKey || !allCropData[currentCropKey]) return;
+
+    const crop = allCropData[currentCropKey];
+
+    const temp = sensorData.temperature || 0;
+    const moisture = sensorData.moisture || sensorData.soilMoisture || 0;
+    const humidity = sensorData.humidity || 0;
+    const ph = sensorData.ph || sensorData.ph_level || sensorData.pH || 0;
+
+    // Temperature Alert
+    if (temp < crop.temperature.min) {
+        showPopup(`Ang temperatura ay mababa para sa ${crop.name}: <b>${temp}°C</b>`);
+    } 
+    else if (temp > crop.temperature.max) {
+        showPopup(`Ang temperatura ay mataas para sa ${crop.name}: <b>${temp}°C</b>`);
+    }
+
+    // Moisture Alert
+    if (moisture < crop.moisture.min) {
+        showPopup(`Ang moisture ay mababa para sa ${crop.name}: <b>${moisture}%</b>`);
+    } 
+    else if (moisture > crop.moisture.max) {
+        showPopup(`Ang moisture ay mataas para sa ${crop.name}: <b>${moisture}%</b>`);
+    }
+
+    // Humidity Alert
+    if (humidity < crop.humidity.min) {
+        showPopup(`Ang humidity ay mababa para sa ${crop.name}: <b>${humidity}%</b>`);
+    } 
+    else if (humidity > crop.humidity.max) {
+        showPopup(`Ang humidity ay mataas para sa ${crop.name}: <b>${humidity}%</b>`);
+    }
+
+    // pH Alert
+    if (ph < crop.ph.min) {
+        showPopup(`Ang pH level ay mababa para sa ${crop.name}: <b>${ph}</b>`);
+    } 
+    else if (ph > crop.ph.max) {
+        showPopup(`Ang pH level ay mataas para sa ${crop.name}: <b>${ph}</b>`);
+    }
+}
+
+//--------------------------------------------------------------------------------------------
+
+//----------------------------------------KASALUKUYANG STATUS------------------------------- 
+
+
 
 /**
  * Updates the current reading cards on the dashboard with the latest data.
@@ -160,13 +175,10 @@ function updateCurrentReadings(sensorData) {
     if (currentCrop) {
         // Temperature Status
         updateStatusElement('status-temp-text', temp, currentCrop.temperature.min, currentCrop.temperature.max, "Celsius");
-        
         // Humidity Status
         updateStatusElement('status-humidity-text', humidity, currentCrop.humidity.min, currentCrop.humidity.max, "%");
-
         // pH Status
         updateStatusElement('status-ph-text', ph, currentCrop.ph.min, currentCrop.ph.max, "pH");
-        
         // Moisture Status (Reusing your specific logic or generic logic)
         updateStatusElement('status-moisture-text', moisture, currentCrop.moisture.min, currentCrop.moisture.max, "%");
     } else {
@@ -176,7 +188,6 @@ function updateCurrentReadings(sensorData) {
             el.className = "status-message status-warning";
         });
     }
-
     // --- 4. Light Status Update ---
     // Assuming 1 = Bright/Light, 0 = Dark
     const lightText = (light == 1 || light === 'Light') ? "Maliwanag" : "Madilim";
@@ -190,12 +201,11 @@ function updateCurrentReadings(sensorData) {
         lightStatEl.textContent = lightText;
         lightStatEl.className = `status-message ${lightClass}`;
     }
-
     // Run your existing soil status logic for the side-panel if needed
     updateSoilMoistureStatus(moisture); 
 }
 
-// --- Helper Function to Determine Status (Add this to home.js) ---
+// ---------------------Helper Function to Determine Status--------------------
 function updateStatusElement(elementId, value, min, max, unit) {
     const element = document.getElementById(elementId);
     if (!element) return;
@@ -217,7 +227,7 @@ function updateStatusElement(elementId, value, min, max, unit) {
     element.textContent = text;
     element.className = className;
 }
-
+//-------------------------------------Initialize Dashboard-----------------------------
 function initDashboard() {
     updateCurrentDate();
     loadAllCropData(); // **MODIFIED**: Load crop data (including custom) from storage
@@ -227,11 +237,8 @@ function initDashboard() {
     initializePumpControls(); // **MODIFIED**: Initializes pump state from storage
     listenToFirebaseData();
 }
-
+//--------------------------------Firebase Data------------------------------------------
 function listenToFirebaseData() {
-    // 💡 REMOVE this line if 'db' is already a global/module variable:
-    // const db = getDatabase(app); 
-    
     // Use the existing 'db' instance
     const readingsRef = query(ref(db, 'sensorData'), limitToLast(20));
 
@@ -263,6 +270,7 @@ function listenToFirebaseData() {
     });
 }
 
+//-------------------------------History Table Time-------------------------------
 /**
  * Formats a Firebase timestamp into a readable time string.
  * This is crucial because it includes a fix for parsing the date string.
