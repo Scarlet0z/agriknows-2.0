@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCq4lH4tj4AS9-cqvM29um--Nu4v2UdvZw",
@@ -11,6 +11,43 @@ const firebaseConfig = {
   messagingSenderId: "922008629713",
   appId: "1:922008629713:web:5cf15ca9d47036b9a8f0f0"
 };
+
+//------------Notification--------------
+
+function showPopup(message) {
+    const popup = document.getElementById("popup");
+    const overlay = document.getElementById("overlay");
+    const popupText = document.getElementById("popup-text");
+
+    popupText.innerHTML = message;
+    
+    popup.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+}
+
+document.getElementById("popup-btn").addEventListener("click", () => {
+    document.getElementById("popup").classList.add("hidden");
+    document.getElementById("overlay").classList.add("hidden");
+});
+
+let soilMoisture = 18;   // from sensor or Firebase
+let threshold = 20;
+
+if (soilMoisture < threshold) {
+    showPopup(`
+        Ang Pag kabasa ng iyong lupa ay bumaba na sa 
+        <b>${soilMoisture}%</b>. 
+        Ang iyong pananim ay maaaring matuyo.
+    `);
+}
+
+if (soilMoisture > 80) {
+    showPopup(`
+        Ang Pag kabasa ng lupa ay masyadong mataas: 
+        <b>${soilMoisture}%</b>.  
+        Iwasan ang overwatering.
+    `);
+}
 
 // Initialize Firebase
 const app =initializeApp (firebaseConfig);
@@ -75,25 +112,55 @@ document.addEventListener('DOMContentLoaded', function () {
    initDashboard();
 });
 
-const auth = getAuth();
+
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log("User is logged in:", user.email);
-        // Continue loading the dashboard
-        initDashboard();
+        // User is signed in, so we can now safely call the function
+        console.log("User is signed in. Fetching data...");
+        listenToFirebaseData();
     } else {
-        console.log("No user logged in");
-        // Redirect to login page
-        window.location.href = "/pages/login.html";
+        // User is signed out. Redirect to login page or display a message.
+        console.log("User is signed out. Redirecting...");
+        // Example: window.location.replace('/pages/login.html');
+        // You can leave this out if your login page handles the unauthenticated state.
     }
 });
+
+/**
+ * Updates the current reading cards on the dashboard with the latest data.
+ * @param {Object} sensorData - The full object of sensor readings from Firebase.
+ */
+function updateCurrentReadings(sensorData) {
+    if (!sensorData) {
+        console.log("No data available to update current readings.");
+        return;
+    }
+
+    // 1. Get the latest reading key (which is the last one in the object)
+    const dataKeys = Object.keys(sensorData).sort();
+    const latestKey = dataKeys[dataKeys.length - 1];
+    const latestReading = sensorData[latestKey];
+
+    // 2. Update the HTML elements for current readings
+    // NOTE: You must ensure your index.html has elements with these IDs!
+    document.getElementById('current-soil-moisture').textContent = `${latestReading.moisture}%`;
+    document.getElementById('current-humidity').textContent = `${latestReading.humidity}%`;
+    document.getElementById('current-temperature').textContent = `${latestReading.temperature}°C`;
+    document.getElementById('current-ph-level').textContent = `${latestReading.ph_level}`;
+    // 3. Update the status bar (if you have one)
+    updateSoilMoistureStatus(latestReading.moisture);
+    // 4. Update Light Status
+    const lightStatusElement = document.getElementById('light-status');
+    const lightStatusText = latestReading.light_status === 1 ? 'ON' : 'OFF';
+    lightStatusElement.textContent = lightStatusText;
+    lightStatusElement.className = latestReading.light_status === 1 ? 'status-on' : 'status-off';
+}
 
 function initDashboard() {
     updateCurrentDate();
     loadAllCropData(); // **MODIFIED**: Load crop data (including custom) from storage
     initializeEventListeners();
-   // loadInitialData();
     updateSoilMoistureStatus(42);
     updateLightStatus(1); // Set initial status to Light (1)
     initializePumpControls(); // **MODIFIED**: Initializes pump state from storage
@@ -101,93 +168,103 @@ function initDashboard() {
 }
 
 function listenToFirebaseData() {
-    // IMPORTANT: Change 'Sensors' to your actual Firebase node name (e.g., 'readings', 'data')
+    // 💡 REMOVE this line if 'db' is already a global/module variable:
+    // const db = getDatabase(app); 
+    
+    // Use the existing 'db' instance
     const readingsRef = query(ref(db, 'sensorData'), limitToLast(20));
 
+    // The listener that runs every time data changes
     onValue(readingsRef, (snapshot) => {
-        const data = snapshot.val();
+        let historyDataArray = [];
+        // ... rest of your snapshot.forEach and data processing ...
+
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            data.id = childSnapshot.key; 
+            historyDataArray.push(data);
+        });
         
-        if (!data) {
-            historyDataBody.innerHTML = '<tr><td colspan="6">Walang nakitang data sa database...</td></tr>';
-            return;
-        }
+        historyDataArray.reverse(); 
+        
+        if (historyDataArray.length > 0) {
+            const latestReading = historyDataArray[0]; 
+            updateCurrentReadings(latestReading);
+            updateSoilMoistureStatus(latestReading.soilMoisture); 
+        } 
 
-        // Convert the Firebase object of objects into a sortable array (newest first)
-        const dataArray = Object.keys(data).map(key => {
-            return {
-                id: key,
-                ...data[key]
-            };
-        }).reverse(); 
-
-        // 1. Update the History Table
-        updateHistoryTable(dataArray);
-
-        // 2. Update the "Kasalukiyang Status" cards with the latest reading
-        if (dataArray.length > 0) {
-            updateCurrentStatusCards(dataArray[0]);
-        }
+        updateHistoryTable(historyDataArray);
+    }, (error) => {
+        // This is the error handler that is now running!
+        console.error("Firebase History Data Listener Error: ", error);
+        // Look at the console for the *actual* error object Firebase returned!
+        alert("Error fetching history data. Check console for details.");
     });
 }
+
 /**
- * Formats a Firebase timestamp or push ID into a readable time string.
- * @param {*} rawTime 
- * @returns {string} Formatted time string
+ * Formats a Firebase timestamp into a readable time string.
+ * This is crucial because it includes a fix for parsing the date string.
  */
 function formatTimestamp(rawTime) {
     if (!rawTime) return 'N/A';
     
     let date;
-    // Check if it's a timestamp string (like "2025-11-26 19:40:51")
-    if (typeof rawTime === 'string' && rawTime.includes('-')) {
-        date = new Date(rawTime.replace(/-/g, "/")); // Replace hyphens for better browser compatibility
-    } 
-    // If it's a Firebase push ID or a standard timestamp
-    else if (typeof rawTime === 'string') {
-        // We can't reliably get time from a push ID without parsing the first 8 bytes.
-        // For simplicity, we'll try to treat it as a timestamp if it's long enough.
-        // If it's a true timestamp (like ms since epoch), this works.
-        const timestampMs = rawTime.length === 20 ? new Date().getTime() : parseInt(rawTime);
-        date = new Date(timestampMs);
+    
+    if (typeof rawTime === 'string') {
+        // 💡 CRITICAL: Replace space and hyphen/slash to fix date parsing issues in some browsers
+        const dateStringFixed = rawTime.replace(/-/g, "/").replace(" ", "T");
+        date = new Date(dateStringFixed); 
     } else {
-        date = new Date(rawTime);
+        date = new Date(rawTime); // For numeric timestamps
     }
     
-    // Check if date parsing was successful
-    if (isNaN(date)) {
-        return rawTime.substring(0, 10) + '...'; // Fallback if parsing fails
+    // Fallback if parsing still fails (e.g., if rawTime is the Firebase Push ID)
+    if (isNaN(date.getTime()) || date.getFullYear() < 2020) { 
+        return rawTime.substring(0, 10) + '...'; 
     }
 
-    // Format as "HH:MM:SS AM/PM"
-    const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-    return date.toLocaleTimeString('en-US', timeOptions);
+    // Format as "MM/DD/YY HH:MM:SS AM/PM"
+    const options = { 
+        year: 'numeric', month: '2-digit', day: '2-digit', 
+        hour: '2-digit', minute: '2-digit', second: '2-digit', 
+        hour12: true 
+    };
+    return date.toLocaleString('en-US', options);
 }
 
 function updateHistoryTable(dataArray) {
     const tableBody = document.getElementById('history-data');
-    if (!tableBody) return;
+    if (!tableBody) {
+        console.warn("Table body element with ID 'history-data' not found.");
+        return; 
+    }
+
     tableBody.innerHTML = ''; // Clear previous data
 
+    // If dataArray is empty, the table will simply be empty.
     dataArray.forEach(data => {
-        // Use the Firebase key (which is often a timestamp) or a specific timestamp field
-        const rawTime = data.timestamp || data.id; // Assuming Firebase key or 'timestamp' field
-        let timeString = formatTimestamp(rawTime);
+        // Use the 'timestamp' from Firebase (e.g., "2025-11-26 20:13:35")
+        const rawTime = data.timestamp || data.id; 
+        
+        // 💡 CRITICAL: If formatTimestamp is missing or buggy, the loop stops here!
+        let timeString = formatTimestamp(rawTime); 
 
         const row = document.createElement('tr');
         
-        // IMPORTANT: Use the correct field names from your Firebase structure.
-        // I'm using common names like 'moisture', 'humidity', etc. Adjust if needed.
+        // Inserting data into the table row using the correct Firebase keys
         row.innerHTML = `
-            <td>${timestamp}</td>
-            <td>${data.moisture || data.soilMoisture || so}%</td>
-            <td>${data.humidity || humidity}%</td>
-            <td>${data.temperature || temparature}°C</td>
-            <td>${data.light || light}</td>
-            <td>${data.ph || pH} pH</td>
+            <td>${timeString}</td>
+            <td>${data.soilMoisture || 'N/A'}%</td>  
+            <td>${data.humidity || 'N/A'}%</td>                       
+            <td>${data.temperature || 'N/A'}°C</td>                   
+            <td>${data.light || 'N/A'}</td>                         
+            <td>${data.pH || 'N/A'} pH</td>              
         `;
         tableBody.appendChild(row);
     });
 }
+
 
 // --- NEW: Function to update the top cards with the latest reading ---
 function updateCurrentStatusCards(latestData) {
@@ -205,17 +282,27 @@ function updateCurrentStatusCards(latestData) {
 }
 
 function updateLightStatus(status) {
-    const lightValueElement = document.getElementById('lightValue');
+    const lightValueElement = document.getElementById('light-status');
     const lightOptimalElement = document.getElementById('lightOptimal');
     
+    // **CRITICAL FIX**: Check if the elements exist before attempting to set properties
+    if (!lightValueElement) {
+        console.warn("Element 'light-status' not found for light status update.");
+        return; // Exit if the main element isn't there
+    }
+
     if (status === 0) {
         lightValueElement.textContent = 'Dark';
     } else {
         lightValueElement.textContent = 'Light';
     }
+    
     // Clear the optimal text since it's no longer needed
-    lightOptimalElement.textContent = ' ';
+    if (lightOptimalElement) { // <-- This check prevents the error on line 294
+        lightOptimalElement.textContent = ' ';
+    }
 }
+
 function updateCurrentDate() {
     const now = new Date();
     const options = {

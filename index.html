@@ -68,6 +68,21 @@
 
             </section>
 
+            <!-------------------notification------------->
+            <section class="notif">
+                <div id="popup" class="popup hidden">
+                    <div class="popup-header">
+                        <img src="/image/warning.png" alt="warning">
+                        <h3>BABALA!</h3>
+                    </div>
+                    <p id="popup-text">
+                        <!-- Text will be changed by JS -->
+                    </p>
+                    <button id="popup-btn">Okay</button>
+                </div>
+                <div id="overlay" class="overlay hidden"></div>
+            </section>
+
             <div class="modal" id="selectCropModal">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -126,7 +141,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Saklaw ng pag kabasa ng lupa
+                            <label class="form-label">Saklaw ng pagkabasa ng lupa
                                 (%)</label>
                             <div class="range-inputs">
                                 <input type="number" id="moistureMin" class="form-input range-input" placeholder="Min"
@@ -185,7 +200,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Saklaw ng Pag kabasa ng luba</label>
+                            <label class="form-label">Saklaw ng Pagkabasa ng luba</label>
                             <div class="range-inputs">
                                 <input type="number" id="editMoistureMin" class="form-input range-input"
                                     placeholder="Min" required>
@@ -223,7 +238,7 @@
             </div>
 
             <section class="current-status">
-                <h2><i class="fas fa-chart-line"></i> Kasalukiyang Status</h2>
+                <h2><i class="fas fa-chart-line"></i> Kasalukuyang Status</h2>
                 <div class="current-status-grid">
 
                     <div class="reading-card">
@@ -231,7 +246,7 @@
                             <i class="fas fa-thermometer-half reading-icon temperature"></i>
                             <h3>Temperatura</h3>
                         </div>
-                        <div class="value">31.1 °C</div>
+                        <div class="value" id="current-temperature">31.1 °C</div>
                         <div class="optimal" id="tempOptimal">Optimal: 20-25°C</div>
                         <div class="last-updated">Last updated: 1 min ago</div>
                     </div>
@@ -239,9 +254,9 @@
                     <div class="reading-card">
                         <div class="reading-header">
                             <i class="fas fa-tint reading-icon moisture"></i>
-                            <h3>Pag Kabasa ng Lupa</h3>
+                            <h3>PagKabasa ng Lupa</h3>
                         </div>
-                        <div class="value">42 %</div>
+                        <div class="value"id="current-soil-moisture">42 %</div>
                         <div class="optimal" id="moistureOptimal">Optimal: 40-60%</div>
                         <div class="last-updated">Last updated: 10 min ago</div>
                     </div>
@@ -251,7 +266,7 @@
                             <i class="fas fa-flask reading-icon ph"></i>
                             <h3>Antas ng pH</h3>
                         </div>
-                        <div class="value">6.7 pH</div>
+                        <div class="value"id="current-ph-level">6.7 pH</div>
                         <div class="optimal" id="phOptimal">Optimal: 6.5-7.0</div>
                         <div class="last-updated">Last updated: 30 min ago</div>
                     </div>
@@ -261,7 +276,7 @@
                             <i class="fas fa-cloud reading-icon humidity"></i>
                             <h3>Halumigmig</h3>
                         </div>
-                        <div class="value">68%</div>
+                        <div class="value"id="current-humidity">68%</div>
                         <div class="optimal" id="humidityOptimal">Optimal: 60-70%</div>
                         <div class="last-updated">Last updated: 1 min ago</div>
                     </div>
@@ -271,7 +286,7 @@
                             <i class="fas fa-sun reading-icon light"></i>
                             <h3>Light Status</h3>
                         </div>
-                        <div class="value" id="lightValue">Dark</div>
+                        <div class="value" id="light-status">Dark</div>
                         <div class="optimal" id="lightOptimal"> </div>
                         <div class="last-updated">Last updated: 1 min ago</div>
                     </div>
@@ -306,7 +321,7 @@
                         <thead>
                             <tr>
                                 <th>Oras</th>
-                                <th>Pag kabasa ng Lupa</th>
+                                <th>Pagkabasa ng Lupa</th>
                                 <th>Halumigmig</th>
                                 <th>Temperatura</th>
                                 <th>Light Status</th>
