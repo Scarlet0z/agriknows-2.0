@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+import { getDatabase, ref, onValue, query, limitToLast, orderByChild, startAt } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCq4lH4tj4AS9-cqvM29um--Nu4v2UdvZw",
@@ -11,12 +12,31 @@ const firebaseConfig = {
   messagingSenderId: "922008629713",
   appId: "1:922008629713:web:5cf15ca9d47036b9a8f0f0"
 };
+ //--------popup------------
+function showPopup(message) {
+    const popup = document.getElementById("popup");
+    const overlay = document.getElementById("overlay");
+    const popupText = document.getElementById("popup-text");
+
+    popupText.innerHTML = message;
+    
+    popup.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+
+    
+    document.getElementById("popup-btn").addEventListener("click", () => {
+        document.getElementById("popup").classList.add("hidden");
+        document.getElementById("overlay").classList.add("hidden");
+    });
+}  
+window.showPopup = showPopup;
 
 //-------------------------------------Firebase Initialization--------------------
 
 // Initialize Firebase
 const app =initializeApp (firebaseConfig);
 const db = getDatabase(app);
+const dbPath = 'sensorData';
 const auth = getAuth(app);
 
 
@@ -94,55 +114,8 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// ---- CHECK SENSOR VALUES AGAINST CROP THRESHOLD ----
-function checkThresholdAndNotify(sensorData) {
-    if (!currentCropKey || !allCropData[currentCropKey]) return;
-
-    const crop = allCropData[currentCropKey];
-
-    const temp = sensorData.temperature || 0;
-    const moisture = sensorData.moisture || sensorData.soilMoisture || 0;
-    const humidity = sensorData.humidity || 0;
-    const ph = sensorData.ph || sensorData.ph_level || sensorData.pH || 0;
-
-    // Temperature Alert
-    if (temp < crop.temperature.min) {
-        showPopup(`Ang temperatura ay mababa para sa ${crop.name}: <b>${temp}°C</b>`);
-    } 
-    else if (temp > crop.temperature.max) {
-        showPopup(`Ang temperatura ay mataas para sa ${crop.name}: <b>${temp}°C</b>`);
-    }
-
-    // Moisture Alert
-    if (moisture < crop.moisture.min) {
-        showPopup(`Ang moisture ay mababa para sa ${crop.name}: <b>${moisture}%</b>`);
-    } 
-    else if (moisture > crop.moisture.max) {
-        showPopup(`Ang moisture ay mataas para sa ${crop.name}: <b>${moisture}%</b>`);
-    }
-
-    // Humidity Alert
-    if (humidity < crop.humidity.min) {
-        showPopup(`Ang humidity ay mababa para sa ${crop.name}: <b>${humidity}%</b>`);
-    } 
-    else if (humidity > crop.humidity.max) {
-        showPopup(`Ang humidity ay mataas para sa ${crop.name}: <b>${humidity}%</b>`);
-    }
-
-    // pH Alert
-    if (ph < crop.ph.min) {
-        showPopup(`Ang pH level ay mababa para sa ${crop.name}: <b>${ph}</b>`);
-    } 
-    else if (ph > crop.ph.max) {
-        showPopup(`Ang pH level ay mataas para sa ${crop.name}: <b>${ph}</b>`);
-    }
-}
-
-//--------------------------------------------------------------------------------------------
 
 //----------------------------------------KASALUKUYANG STATUS------------------------------- 
-
-
 
 /**
  * Updates the current reading cards on the dashboard with the latest data.
@@ -254,52 +227,49 @@ function listenToFirebaseData() {
         });
         
         historyDataArray.reverse(); 
+        // ** NEW LINE: Save data to global variable for the graphs **
+        latestHistoryData = historyDataArray;
         
         if (historyDataArray.length > 0) {
             const latestReading = historyDataArray[0]; 
             updateCurrentReadings(latestReading);
-            updateSoilMoistureStatus(latestReading.soilMoisture); 
+            //updateSoilMoistureStatus(latestReading.soilMoisture); 
         } 
-
         updateHistoryTable(historyDataArray);
+
+      // ** NEW BLOCK: Update graphs if they are visible **
+        const graphContainer = document.getElementById('history-graph');
+        if (graphContainer && !graphContainer.classList.contains('hidden')) {
+            updateAllCharts();
+        }
+
     }, (error) => {
-        // This is the error handler that is now running!
         console.error("Firebase History Data Listener Error: ", error);
-        // Look at the console for the *actual* error object Firebase returned!
-        alert("Error fetching history data. Check console for details.");
     });
 }
 
 //-------------------------------History Table Time-------------------------------
 /**
- * Formats a Firebase timestamp into a readable time string.
- * This is crucial because it includes a fix for parsing the date string.
+ * Formats a Firebase timestamp (milliseconds) into a compact, readable date and time.
+ * @param {number} timestamp - The timestamp in milliseconds.
+ * @returns {string} The formatted date and time string (e.g., "11/27/2025, 7:46:54 PM").
  */
-function formatTimestamp(rawTime) {
-    if (!rawTime) return 'N/A';
+function formatTimestamp(timestamp) {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
     
-    let date;
-    
-    if (typeof rawTime === 'string') {
-        // 💡 CRITICAL: Replace space and hyphen/slash to fix date parsing issues in some browsers
-        const dateStringFixed = rawTime.replace(/-/g, "/").replace(" ", "T");
-        date = new Date(dateStringFixed); 
-    } else {
-        date = new Date(rawTime); // For numeric timestamps
-    }
-    
-    // Fallback if parsing still fails (e.g., if rawTime is the Firebase Push ID)
-    if (isNaN(date.getTime()) || date.getFullYear() < 2020) { 
-        return rawTime.substring(0, 10) + '...'; 
-    }
+    // Use Intl.DateTimeFormat for a compact and precise output (Date and Time)
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true // Ensures AM/PM display
+    });
 
-    // Format as "MM/DD/YY HH:MM:SS AM/PM"
-    const options = { 
-        year: 'numeric', month: '2-digit', day: '2-digit', 
-        hour: '2-digit', minute: '2-digit', second: '2-digit', 
-        hour12: true 
-    };
-    return date.toLocaleString('en-US', options);
+    return formatter.format(date);
 }
 
 function updateHistoryTable(dataArray) {
@@ -713,7 +683,7 @@ function openEditDeleteModal(cropKey) {
     // Show the modal
     editDeleteCropModal.style.display = 'flex';
 }
-
+//-------------------------------History Table Time Buttons-------------------------------
 function initializeTimeFilters() {
     const timeFilters = document.querySelectorAll('.time-filter');
     timeFilters.forEach(filter => {
@@ -725,7 +695,35 @@ function initializeTimeFilters() {
         });
     });
 }
+//-------------------------------Export Data Functionality-------------------------------
+function initializeExportListeners() {
+    // We add a small delay to ensure the DOM has fully parsed the button element.
+    // This is the most reliable way to fix the "null" error in complex initialization flows.
+    setTimeout(() => {
+        const exportButton = document.getElementById('export-button');
 
+        if (exportButton) {
+            exportButton.addEventListener('click', () => {
+                console.log("Export button clicked.");
+                
+                // Get the currently active time range from the buttons
+                // Assumes your time range buttons have the class 'time-range-btn'
+                const activeButton = document.querySelector('.time-range-btn.active');
+                
+                // Default to '24h' if no button is active
+                const range = activeButton ? activeButton.getAttribute('data-range') : '24h'; 
+                
+                // Call the function to fetch data and export it
+                fetchAndExportData(range);
+            });
+        } else {
+            console.error("ERROR: Export button with ID 'export-button' not found after loading delay.");
+        }
+    }, 100); // Wait for 100 milliseconds
+}
+// Make sure this function is called inside your main initialization/DOMContentLoaded block.
+
+//-------------------------------Graph Mode Toggle-------------------------------
 function initializeGraphMode() {
     const toggleBtn = document.getElementById('graph-mode-toggle');
     const tableView = document.getElementById('history-table');
@@ -733,21 +731,39 @@ function initializeGraphMode() {
 
     toggleBtn.addEventListener('click', () => {
         if (tableView.classList.contains('hidden')) {
+            // Show Table
             tableView.classList.remove('hidden');
             graphView.classList.add('hidden');
             toggleBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Graph Mode';
         } else {
+            // Show Graph
             tableView.classList.add('hidden');
             graphView.classList.remove('hidden');
             toggleBtn.innerHTML = '<i class="fas fa-table"></i> Table Mode';
-            initializeCharts();
+            
+            // ** Load the charts with real data **
+            updateAllCharts(); 
         }
     });
 }
-
+//-------------------------------Export Data Functionality-------------------------------
 function initializeExportButton() {
-    const exportBtn = document.getElementById('export-btn');
-    exportBtn.addEventListener('click', exportData);
+    const exportButton = document.getElementById('export-button');
+
+    // CRITICAL: Checks for null before attaching the listener
+    if (exportButton) {
+        exportButton.addEventListener('click', () => {
+            console.log("Export button successfully clicked.");
+            
+            const activeButton = document.querySelector('.time-range-btn.active');
+            const range = activeButton ? activeButton.getAttribute('data-range') : '24h'; 
+            
+            // FIX: Use the correct function name: fetchAndExportData
+            fetchAndExportData(range); // <--- THIS WAS THE ERROR
+        });
+    } else {
+        console.error("Initialization Error: Export button with ID 'export-button' not found.");
+    }
 }
 
 function initializePumpControls() {
@@ -764,8 +780,58 @@ function initializePumpControls() {
     });
 
 }
+/**
+ * Fetches data for the specified time range and exports it as CSV.
+ * @param {string} range - The time range ('1h', '6h', '24h', '7d').
+ */
+async function fetchAndExportData(range) {
+    // 1. Calculate the start timestamp (unchanged from previous step)
+    const now = Date.now();
+    let startTime;
+    let fileNameRange = range;
+    
+    switch (range) {
+        case '1h': startTime = now - (60 * 60 * 1000); break;
+        case '6h': startTime = now - (6 * 60 * 60 * 1000); break;
+        case '24h': 
+        default: 
+            startTime = now - (24 * 60 * 60 * 1000); 
+            fileNameRange = '24h'; 
+            break;
+        case '7d': startTime = now - (7 * 24 * 60 * 60 * 1000); break;
+    }
 
+    // 2. Build the query (unchanged)
+    const exportQuery = query(
+        ref(db, dbPath), 
+        orderByChild('timestamp'), // REQUIRES your data nodes to have a 'timestamp' field
+        startAt(startTime)
+    );
 
+  window.showPopup(`Naghahanda ng ${range} data para i-export...`);
+
+    try {
+        onValue(exportQuery, (snapshot) => {
+            let dataToExport = [];
+            snapshot.forEach((childSnapshot) => {
+                dataToExport.push(childSnapshot.val());
+            });
+
+            if (dataToExport.length === 0) {
+               window.showPopup("Walang natagpuang data sa loob ng napiling hanay ng oras.");
+                return;
+            }
+
+            // 3. Process and export the fetched data
+            exportDataToCSV(dataToExport, fileNameRange);
+
+        }, { onlyOnce: true }); 
+    } catch (error) {
+        console.error("Error fetching data for export:", error);
+        window.showPopup("May error sa pag-fetch ng data.");
+    }
+}
+//------------------------------- Irrigation/Pump Control Functionality-------------------------------
 function setPumpStatus(status) {
     const pumpSwitch = document.getElementById('pump-switch');
     // *** Save state to localStorage ***
@@ -881,27 +947,123 @@ function loadHistoryData(timeRange) {
         }
     ];
 */
+// ---------------------Chart Initialization-----------------------------
+function updateAllCharts() {
+    if (latestHistoryData.length === 0) return;
 
+    // Take the last 10 entries for the graph so it's not too crowded
+    const dataToGraph = [...latestHistoryData].slice(0, 10).reverse(); 
 
+    // Extract Labels (Time)
+    const labels = dataToGraph.map(d => {
+        const timeStr = formatTimestamp(d.timestamp || d.id);
+        const parts = timeStr.split(' '); 
+        if(parts.length >= 3) return `${parts[1]} ${parts[2]}`;
+        return timeStr.split(',')[1] || timeStr; // Fallback
+    });
 
-function initializeCharts() {
-    // Initialize smaller bar charts for each parameter
-    initializeBarChart('soil-moisture-chart', 'Soil Moisture', [45, 43, 41, 44, 42], '#3498db');
-    initializeBarChart('humidity-chart', 'Humidity', [62, 64, 63, 65, 62], '#2980b9');
-    initializeBarChart('temperature-chart', 'Temperature', [22.1, 21.8, 21.5, 22.3, 22.0], '#e74c3c');
-    initializeBarChart('ph-level-chart', 'pH Level', [6.7, 6.8, 6.7, 6.9, 6.8], '#9b59b6');
+    // Extract Data Values
+    const moistureData = dataToGraph.map(d => d.soilMoisture || d.moisture || 0);
+    const humidityData = dataToGraph.map(d => d.humidity || 0);
+    const tempData = dataToGraph.map(d => d.temperature || 0);
+    const phData = dataToGraph.map(d => d.pH || d.phLevel || 0);
+
+    // Render each chart, passing yMin, yMax, and yStep as new arguments
+    // Pagkabasa ng Lupa (%): 0 to 100, Step 10
+    renderChart('soil-moisture-chart', 'Pagkabasa ng Lupa (%)', labels, moistureData, '#3498db', 0, 100, 10);
+    
+    // Halumigmig (%): 0 to 100, Step 10
+    renderChart('humidity-chart', 'Halumigmig (%)', labels, humidityData, '#2980b9', 0, 100, 10);
+    
+    // Temperatura (°C): 0 to 100, Step 10
+    renderChart('temperature-chart', 'Temperatura (°C)', labels, tempData, '#e74c3c', 0, 100, 10);
+    
+    // Antas ng pH: 0 to 14, Step 2 (Using 2 for a cleaner visual scale)
+    renderChart('ph-level-chart', 'Antas ng pH', labels, phData, '#9b59b6', 0, 14, 2); 
 }
-function initializeBarChart(canvasId, label, data, color) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
+// NOTE: Added yMin, yMax, yStep to the function signature
+function renderChart(canvasId, label, labels, data, color, yMin, yMax, yStep) {
+    const ctxElement = document.getElementById(canvasId);
+    if (!ctxElement) return;
+    
+    const ctx = ctxElement.getContext('2d');
+
+    // CRITICAL: Destroy old chart instance if it exists
+    if (chartInstances[canvasId]) {
+        chartInstances[canvasId].destroy();
+    }
+
+    // Create new Chart instance
+    chartInstances[canvasId] = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['1', '2', '3', '4', '5'],
-            datasets: [{ label: label, data: data, backgroundColor: color + '80', borderColor: color, borderWidth: 1, borderRadius: 4 }]
+            labels: labels, 
+            datasets: [{
+                label: label,
+                data: data,     
+                backgroundColor: color + '80',
+                borderColor: color,
+                borderWidth: 1,
+                borderRadius: 4
+            }]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false }, x: { display: false } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    // APPLYING THE FIXED SCALE RANGES AND STEPS HERE:
+                    min: yMin,      // Sets the Y-axis minimum (e.g., 0)
+                    max: yMax,      // Sets the Y-axis maximum (e.g., 100 or 14)
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { 
+                        stepSize: yStep, // Sets the interval between ticks (e.g., 10 or 2)
+                        color: '#555',
+                        font: { size: 11 }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Value'
+                    }
+                },
+                x: {
+                    display: true,
+                    grid: { display: false },
+                    ticks: {
+                        color: '#555',
+                        font: { size: 10 },
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    title: {
+                        display: true,
+                        text: 'Oras'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }, 
+                title: {
+                    display: true,
+                    text: label,
+                    font: { size: 14, weight: 'bold' },
+                    color: '#333',
+                    padding: { bottom: 10 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y;
+                        }
+                    }
+                }
+            }
+        }
     });
 }
+
+
 /*function initializeBarChart(canvasId, label, data, color) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     new Chart(ctx, {
@@ -970,6 +1132,63 @@ function initializeBarChart(canvasId, label, data, color) {
         }
     });
 }*/
+/**
+ * Converts the provided data array into a CSV file and triggers download.
+ * @param {Array<Object>} dataArray - The sensor data to export.
+ * @param {string} range - The time range used for the filename.
+ */
+function exportDataToCSV(dataArray, range) {
+    if (dataArray.length === 0) {
+        alert('Walang data na mai-export.');
+        return;
+    }
+
+    // Define the CSV header based on your table columns
+    const headers = [
+        "timestamp", 
+        "Pagkabasa ng Lupa (moisture)", 
+        "Halumigmig (humidity)", 
+        "Temperatura (temperature)", 
+        "Light Status (light)", 
+        "Antas ng pH (phLevel)"
+    ];
+    
+    // Start CSV content with headers
+    let csvContent = headers.join(',') + '\n';
+
+    // Map the data array to CSV rows
+    dataArray.forEach(row => {
+        const formattedTimestamp = formatTimestamp(row.timestamp || row.id);
+        // 1. Enclose the timestamp in double quotes (")
+        const quotedTimestamp = `"${formattedTimestamp}"`; 
+        
+        const rowData = [
+            quotedTimestamp, // Use the quoted timestamp for CSV safety
+            row.soilMoisture || row.moisture || '', 
+            row.humidity || '', 
+            row.temperature || '', 
+            row.lightStatus || row.light || '', 
+            row.phLevel || row.pH || '' 
+        ];
+        csvContent += rowData.join(',') + '\n';
+    });
+    
+    // Create and trigger the download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    // Use the fetched time range in the filename
+    a.setAttribute('download', `agriknows-data-${range}-${new Date().toISOString().split('T')[0]}.csv`);
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    alert(`Tagumpay na na-export ang ${dataArray.length} entries (${range})!`);
+}
+/*
 function exportData() {
     // Create CSV content
     let csvContent = "Time,Device,Soil Moisture,Humidity,Temperature,Light Level,pH Level\n";
@@ -998,7 +1217,7 @@ function exportData() {
 
     alert('Data exported successfully!');
 }
-
+*/
 function updateSoilMoistureStatus(moistureLevel) {
     const statusElement = document.getElementById('soil-moisture-status');
     let status, message, className;
