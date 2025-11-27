@@ -163,11 +163,12 @@ header {
   color: #fff;
   background-color: #2e7d32;
   width: 200px;
-  height: 40px;
+  height: auto;
   border: none;
   border-radius: 10px;
   flex-direction: row;
   gap: 10px;
+  padding: 10px;
   margin-right: 20px;
 }
 
@@ -528,20 +529,45 @@ input:checked + .slider:before {
 }
 
 /*------History Table-------*/
-.history-table table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
+.history-table {
+  max-height: 400px;
   border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  overflow-x: auto; /* more appropriate than scroll */
+  background-color: #fff;
+  text-align: center;
 }
 
+.history-table table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  min-width: 900px;  /* <-- THIS ensures columns won't collapse */
+}
+
+/* Sticky Header */
+.history-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #2e7d32;
+  z-index: 2;
+  text-align: center;
+}
+
+/* ORAS column fix */
+.history-table th:first-child,
+.history-table td:first-child {
+    width: 220px;
+    min-width: 220px;
+    white-space: nowrap;
+}
+
+/* Table Cells */
 .history-table th,
 .history-table td {
   padding: 12px 15px;
-  text-align: left;
   border-bottom: 1px solid #ddd;
+  text-align: center;
 }
 
 .history-table th {
@@ -684,7 +710,6 @@ input:checked + .slider:before {
 
 .modal-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
@@ -695,25 +720,16 @@ input:checked + .slider:before {
   color: var(--primary);
 }
 
-/* ----------------Modal Styles ----------------*/
-
 .close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--secondary);
-    position: absolute; 
-    top: 15px;  
-    right: 15px;  
-    z-index: 1002;
-    padding: 5px;    
-    transition: color 0.2s;
-}
-
-/* Add hover style for usability */
-.close-modal:hover {
-    color: #e74c3c;
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  z-index: 10;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--secondary);
 }
 
 .form-group {
@@ -882,6 +898,12 @@ footer {
     flex-direction: column;
     gap: 20px;
   }
+
+  .close-modal{
+
+    left: 135px;
+    top: 15px;
+  }
 /*-------Notification---------*/
   .popup {
         max-width: 90%; 
@@ -895,11 +917,6 @@ footer {
         bottom: 10px;
         right: 15px;
         padding: 8px 12px;
-    }
-
-    .close-modal {
-        right: 1px; /* Adjust this value (e.g., from 15px to 5px) to move it closer to the edge */
-        top: 10px;  /* You might also want to adjust the top position slightly */
     }
 
   h2 {
@@ -975,7 +992,6 @@ footer {
 
   /* Modal centered better */
   .modal-content {
-    justify-content: center;
     width: 90%;
     height: auto;
     padding: 20px;

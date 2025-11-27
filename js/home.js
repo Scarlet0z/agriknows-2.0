@@ -54,6 +54,8 @@ const app =initializeApp (firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
+
+
 function preventBack() {
     window.history.forward();
 }
