@@ -242,6 +242,31 @@ header {
   border-radius: 9px;
 }
 /*---------------- Current Status ----------------*/
+/* Add to home.css */
+
+.status-good {
+    background-color: #c6f6d5; /* Green background */
+    color: #276749;            /* Dark green text */
+}
+
+.status-warning {
+    background-color: #feebcb; /* Orange background */
+    color: #c05621;            /* Dark orange text */
+}
+
+.status-danger {
+    background-color: #fed7d7; /* Red background */
+    color: #c53030;            /* Dark red text */
+}
+
+/* Ensure the status message text is centered and spaced correctly */
+.status-message {
+    margin: 5px 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+/*end of added*/
 .current-status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -546,20 +571,26 @@ input:checked + .slider:before {
 }
 
 /* Sticky Header */
+/*------History Table-------*/
+/* ... existing styles ... */
+
+/* Sticky Header */
 .history-table thead th {
-  position: sticky;
-  top: 0;
-  background-color: #2e7d32;
-  z-index: 2;
-  text-align: center;
+    position: sticky;
+    top: 0;
+    background-color: #2e7d32; /* Changed color to match new green */
+    z-index: 2;
+    text-align: center; /* Added center alignment for header */
 }
 
 /* ORAS column fix */
 .history-table th:first-child,
 .history-table td:first-child {
-    width: 220px;
-    min-width: 220px;
     white-space: nowrap;
+    /* Set a specific minimum width to ensure the full timestamp is visible */
+    min-width: 140px; 
+    /* Also ensure max-width is not limited, though min-width usually handles this */
+    width: 200px; 
 }
 
 /* Table Cells */

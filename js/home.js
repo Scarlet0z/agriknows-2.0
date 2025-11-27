@@ -139,24 +139,83 @@ function updateCurrentReadings(sensorData) {
         return;
     }
 
-    // 1. Get the latest reading key (which is the last one in the object)
-    const dataKeys = Object.keys(sensorData).sort();
-    const latestKey = dataKeys[dataKeys.length - 1];
-    const latestReading = sensorData[latestKey];
+    // --- 1. Get Data Values ---
+    // Handle cases where keys might be lowercase or capitalized based on your previous file usage
+    const temp = sensorData.temperature || 0;
+    const moisture = sensorData.moisture || sensorData.soilMoisture || 0;
+    const humidity = sensorData.humidity || 0;
+    const ph = sensorData.ph || sensorData.ph_level || sensorData.pH || 0;
+    const light = sensorData.light || sensorData.light_status || 0;
 
-    // 2. Update the HTML elements for current readings
-    // NOTE: You must ensure your index.html has elements with these IDs!
-    document.getElementById('current-soil-moisture').textContent = `${latestReading.moisture}%`;
-    document.getElementById('current-humidity').textContent = `${latestReading.humidity}%`;
-    document.getElementById('current-temperature').textContent = `${latestReading.temperature}°C`;
-    document.getElementById('current-ph-level').textContent = `${latestReading.ph_level}`;
-    // 3. Update the status bar (if you have one)
-    updateSoilMoistureStatus(latestReading.moisture);
-    // 4. Update Light Status
-    const lightStatusElement = document.getElementById('light-status');
-    const lightStatusText = latestReading.light_status === 1 ? 'ON' : 'OFF';
-    lightStatusElement.textContent = lightStatusText;
-    lightStatusElement.className = latestReading.light_status === 1 ? 'status-on' : 'status-off';
+    // --- 2. Update Numeric Values in HTML ---
+    document.getElementById('current-temperature').textContent = `${temp} °C`;
+    document.getElementById('current-soil-moisture').textContent = `${moisture}%`;
+    document.getElementById('current-humidity').textContent = `${humidity}%`;
+    document.getElementById('current-ph-level').textContent = `${ph} pH`;
+
+    // --- 3. Update Text Status (The Logic) ---
+    // We get the settings for the currently selected crop
+    const currentCrop = allCropData[currentCropKey];
+
+    if (currentCrop) {
+        // Temperature Status
+        updateStatusElement('status-temp-text', temp, currentCrop.temperature.min, currentCrop.temperature.max, "Celsius");
+        
+        // Humidity Status
+        updateStatusElement('status-humidity-text', humidity, currentCrop.humidity.min, currentCrop.humidity.max, "%");
+
+        // pH Status
+        updateStatusElement('status-ph-text', ph, currentCrop.ph.min, currentCrop.ph.max, "pH");
+        
+        // Moisture Status (Reusing your specific logic or generic logic)
+        updateStatusElement('status-moisture-text', moisture, currentCrop.moisture.min, currentCrop.moisture.max, "%");
+    } else {
+        // If no crop selected, just show "No Crop Selected"
+        document.querySelectorAll('.status-message').forEach(el => {
+            el.textContent = "Pumili ng Pananim";
+            el.className = "status-message status-warning";
+        });
+    }
+
+    // --- 4. Light Status Update ---
+    // Assuming 1 = Bright/Light, 0 = Dark
+    const lightText = (light == 1 || light === 'Light') ? "Maliwanag" : "Madilim";
+    const lightClass = (light == 1 || light === 'Light') ? "status-good" : "status-warning";
+    
+    const lightEl = document.getElementById('light-status');
+    const lightStatEl = document.getElementById('status-light-text');
+    
+    if(lightEl) lightEl.textContent = light === 1 ? "Light" : "Dark";
+    if(lightStatEl) {
+        lightStatEl.textContent = lightText;
+        lightStatEl.className = `status-message ${lightClass}`;
+    }
+
+    // Run your existing soil status logic for the side-panel if needed
+    updateSoilMoistureStatus(moisture); 
+}
+
+// --- Helper Function to Determine Status (Add this to home.js) ---
+function updateStatusElement(elementId, value, min, max, unit) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    let text = "";
+    let className = "status-message";
+
+    if (value < min) {
+        text = "Mababa"; // Low
+        className += " status-warning";
+    } else if (value > max) {
+        text = "Mataas"; // High
+        className += " status-danger";
+    } else {
+        text = "Mainam"; // Optimal/Good
+        className += " status-good";
+    }
+
+    element.textContent = text;
+    element.className = className;
 }
 
 function initDashboard() {
